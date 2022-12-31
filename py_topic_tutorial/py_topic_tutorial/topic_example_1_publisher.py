@@ -53,20 +53,20 @@ class TwistPubNode(Node):
         #   msg_type::, topic_name::, queue_size::
         # )
         # self.twist_publisher = self.create_publisher(Twist, "twist_topic", 10)
-        self.twist_publisher = self.create_publisher(Twist, '/turtle1/cmd_vel', 10)
+        self.twist_publisher = self.create_publisher(Twist, '/cmd_vel', 10)
         self.create_timer(0.2, self.timer_callback)
 
     def timer_callback(self):
         """Timer will run this function periodically."""
         msg = Twist()
+
         # Fill in msg with compatible values
-        msg.linear.x = random.random()
-        msg.angular.z = random.uniform(-1.0, 1.0)
+        msg.linear.x = 1.0
+        msg.angular.z = random.uniform(-1.5, -1.0)
         self.get_logger().info(
             f'Linear X velocity : {msg.linear.x} / Angular Z velocity : {msg.angular.z}'
         )
 
-        # publish into "/turtle1/cmd_vel" topic
         self.twist_publisher.publish(msg)
 
 

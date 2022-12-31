@@ -24,10 +24,10 @@ Listen to pose of turtle in the turtlesim.
 
 import rclpy
 from rclpy.node import Node
-from turtlesim.msg import Pose
 
+from sensor_msgs.msg import LaserScan
 
-class TurtlePoseSubNode(Node):
+class ScanSubNode(Node):
     """turtlesim/Pose msg Subscriber Node.
 
     This node will listen pose topic from turtlesim.
@@ -39,7 +39,7 @@ class TurtlePoseSubNode(Node):
 
         You must type name of the node in inheritanced initializer.
         """
-        super().__init__('turtlepose_sub_node')
+        super().__init__('scan_sub_node')
 
         queue_size = 10  # Queue Size
         # You can create subscriber with create_subscription function
@@ -49,25 +49,31 @@ class TurtlePoseSubNode(Node):
         #
         # topic name must exists and coincident with exact topic name
         self.pose_subscriber = self.create_subscription(
-            Pose, 'turtle1/pose', self.sub_callback, queue_size
+            LaserScan, 'scan', self.sub_callback, queue_size
         )
 
     def sub_callback(self, msg):
         """Timer will run this function periodically."""
-        self.get_logger().info(f"""x : {msg.x:.3f} / y : {msg.y:.3f} / theta : {msg.theta:.3f}
-        linear_velocity : {msg.linear_velocity} / angular_velocity : {msg.angular_velocity }""")
+        self.get_logger().info(f' \
+            \nmsg.ranges[0] : {msg.ranges[0]} \
+            \nmsg.ranges[30] : {msg.ranges[30]} \
+            \nmsg.ranges[60] : {msg.ranges[60]} \
+            \nmsg.ranges[90] : {msg.ranges[90]} \
+            \nmsg.ranges[119] : {msg.ranges[119]} \
+        ')
+        # self.get_logger().info(f"""x : {msg.x:.3f} / y : {msg.y:.3f} / theta : {msg.theta:.3f}
+        # linear_velocity : {msg.linear_velocity} / angular_velocity : {msg.angular_velocity }""")
 
 
 def main(args=None):
     """Do enter into this main function first."""
     rclpy.init(args=args)
 
-    tp_sub_node = TurtlePoseSubNode()
+    scan_sub_node = ScanSubNode()
 
-    rclpy.spin(tp_sub_node)
-    # rclpy.spin_once(tp_sub_node)
+    rclpy.spin(scan_sub_node)
 
-    tp_sub_node.destroy_node()
+    scan_sub_node.destroy_node()
     rclpy.shutdown()
 
 
