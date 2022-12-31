@@ -16,6 +16,8 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 
+using namespace std::chrono_literals;
+
 static int count = 0;
 
 void timer_callback(){
@@ -26,7 +28,7 @@ void timer_callback(){
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("example_node_2");
-  auto timer = node->create_wall_timer(std::chrono::milliseconds(200), timer_callback);
+  auto timer = node->create_wall_timer(200ms, timer_callback);
 
   rclcpp::spin(node); 
 
