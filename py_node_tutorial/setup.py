@@ -25,7 +25,6 @@ setup(
             'example_node_3 = py_node_tutorial.node_example_3:main',
             'example_node_4 = py_node_tutorial.node_example_4:main',
             'example_node_5 = py_node_tutorial.node_example_5:main',
-            'example_node_6 = py_node_tutorial.node_example_6:main',
         ],
     },
 )

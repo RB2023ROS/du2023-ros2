@@ -18,7 +18,7 @@ This is an third example code for ROS 2 rclpy node programming.
 
 Let's learn about those things.
 
-ROS 2 Node Composition (Node through Class)
+Implement Example 3 with ROS 2 Node Composition.
 """
 
 import rclpy
@@ -26,10 +26,9 @@ from rclpy.node import Node
 
 
 class NodeClass(Node):
-    """Our First Node Class.
+    """Second Node Class.
 
-    Actually, This Class is just "dummy".
-    It doesn't do anything after initialized.
+    Just print log periodically.
     """
 
     def __init__(self):
@@ -37,7 +36,15 @@ class NodeClass(Node):
 
         You must type name of the node in inheritanced initializer.
         """
-        super().__init__('node_name')
+        super().__init__('composition_example_node')
+        self.create_timer(0.2, self.timer_callback)
+
+        self._count = 1
+
+    def timer_callback(self):
+        """Timer will run this function periodically."""
+        self.get_logger().info(f'==== Hello ROS 2 : {self._count}====')
+        self._count += 1
 
 
 def main(args=None):
@@ -45,8 +52,8 @@ def main(args=None):
     rclpy.init(args=args)
 
     node = NodeClass()
-    # node2 = NodeClass()
-    node.get_logger().info('\n==== Hello ROS 2 ====')
+
+    rclpy.spin(node)
     node.destroy_node()
 
     rclpy.shutdown()

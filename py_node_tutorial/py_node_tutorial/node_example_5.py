@@ -18,7 +18,8 @@ This is an third example code for ROS 2 rclpy node programming.
 
 Let's learn about those things.
 
-Implement Example 3 with ROS 2 Node Composition.
+ROS 2 Node Composition.
+ROS 2 Logger Level
 """
 
 import rclpy
@@ -26,9 +27,9 @@ from rclpy.node import Node
 
 
 class NodeClass(Node):
-    """Second Node Class.
+    """Third Node Class.
 
-    Just print log periodically.
+    Print log periodically with Logger Level.
     """
 
     def __init__(self):
@@ -36,15 +37,22 @@ class NodeClass(Node):
 
         You must type name of the node in inheritanced initializer.
         """
-        super().__init__('composition_example_node')
+        super().__init__('node_name')
         self.create_timer(0.2, self.timer_callback)
 
-        self._count = 1
+        self.count = 1
 
     def timer_callback(self):
         """Timer will run this function periodically."""
-        self.get_logger().info(f'==== Hello ROS 2 : {self._count}====')
-        self._count += 1
+        # There're 5 logger-level in ROS 2 get_logger() System.
+        # Try out and watch whats difference.
+        self.get_logger().debug(f'==== Hello ROS 2 : {self.count}====')
+        self.get_logger().info(f'==== Hello ROS 2 : {self.count}====')
+        self.get_logger().warn(f'==== Hello ROS 2 : {self.count}====')
+        self.get_logger().error(f'==== Hello ROS 2 : {self.count}====')
+        self.get_logger().fatal(f'==== Hello ROS 2 : {self.count}====')
+
+        self.count += 1
 
 
 def main(args=None):
@@ -52,7 +60,6 @@ def main(args=None):
     rclpy.init(args=args)
 
     node = NodeClass()
-
     rclpy.spin(node)
     node.destroy_node()
 
