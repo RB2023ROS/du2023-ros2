@@ -21,7 +21,13 @@ find_package(ament_cmake REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
-########
+
+######################################
+###### 1. Comment Below Blocks   #####
+###### 2. colcon build once      #####
+###### 3. Uncomment Below Blocks #####
+###### 4. colcon build again     #####
+######################################
 
 find_package(xacro REQUIRED)
 # Xacro files
