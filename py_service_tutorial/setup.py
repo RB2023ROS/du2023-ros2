@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'turtle_spawn_client = py_service_tutorial.turtle_spawn:main',
             'turtle_circle_server = py_service_tutorial.turtle_circle_server:main',
+            'take_picture_server = py_service_tutorial.take_picture_server:main',
             'turtle_circle_server_advanced = py_service_tutorial.turtle_circle_server_advanced:main',
             'turtle_jail = py_service_tutorial.turtle_jail:main',
         ],

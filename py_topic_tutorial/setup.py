@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'topic_pub_node = py_topic_tutorial.topic_example_1_publisher:main',
             'topic_sub_node = py_topic_tutorial.topic_example_2_subscriber:main',
+            'parking_node   = py_topic_tutorial.topic_example_3_pub_and_sub:main',
             'mimic_node     = py_topic_tutorial.topic_example_4_mimic:main',
         ],
     },
