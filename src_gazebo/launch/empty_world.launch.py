@@ -16,6 +16,8 @@
 
 import os
 
+from osrf_pycommon.terminal_color import ansi
+
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
@@ -33,10 +35,19 @@ import xacro
 
 def generate_launch_description():
 
+    # gz model path edit
+    gazebo_model_path = os.path.join(get_package_share_directory('src_gazebo'), 'models')
+    if 'GAZEBO_MODEL_PATH' in os.environ:
+        os.environ['GAZEBO_MODEL_PATH'] += ":" + gazebo_model_path
+    else :
+        os.environ['GAZEBO_MODEL_PATH'] = gazebo_model_path
+    print(ansi("yellow"), "If it's your 1st time to download Gazebo model on your computer, it may take few minutes to finish.", ansi("reset"))
+
     # gazebo
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
     pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
+    # world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
+    world_path = os.path.join(pkg_path, 'worlds', 'wall_world.world')
 
     # launch configuration
     use_rviz = LaunchConfiguration('use_rviz')

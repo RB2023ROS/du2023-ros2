@@ -61,11 +61,8 @@ class TwistPubNode(Node):
         msg = Twist()
 
         # Fill in msg with compatible values
-        msg.linear.x = 1.0
-        msg.angular.z = random.uniform(-1.5, -1.0)
-        self.get_logger().info(
-            f'Linear X velocity : {msg.linear.x} / Angular Z velocity : {msg.angular.z}'
-        )
+        msg.linear.x = 0.5
+        msg.angular.z = 1.0
 
         self.twist_publisher.publish(msg)
 

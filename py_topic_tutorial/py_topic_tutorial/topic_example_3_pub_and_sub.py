@@ -13,67 +13,48 @@
 # limitations under the License.
 
 
-"""
-This is an third example code for ROS 2 rclpy node programming.
-
-Let's learn about those things.
-
-How can place publisher & subscriber in the same Node.
-Make turtle2 following turtle1.
-"""
-
-from geometry_msgs.msg import Twist
 import rclpy
 from rclpy.node import Node
-from turtlesim.msg import Pose
+
+from geometry_msgs.msg import Twist
+from sensor_msgs.msg import LaserScan
 
 
-class PoseSubTwistPubNode(Node):
-    """turtlesim/Pose msg Subscriber Node.
-
-    This node will listen pose topic from turtlesim.
-    Then just print them on terminal.
-    """
+class ParkingNode(Node):
 
     def __init__(self):
-        """Node Initialization.
 
-        You must type name of the node in inheritanced initializer.
-        """
-        super().__init__('mimic_node')
+        super().__init__('parking_node')
         queue_size = 10  # Queue Size
-        # Create publisher & subscriber at the same time.
-        # Look carefully at below two lines.
-        self.twist_publisher = self.create_publisher(Twist, '/turtle2/cmd_vel', queue_size)
-        self.subscriber = self.create_subscription(
-            Pose, 'turtle1/pose', self.sub_callback, queue_size
+
+        self.twist_publisher = self.create_publisher(Twist, 'cmd_vel', queue_size)
+        self.scan_subscriber = self.create_subscription(
+            LaserScan, 'scan', self.sub_callback, queue_size
         )
 
     def sub_callback(self, msg):
-        """Do sth feedback for msg input.
 
-        This function will be Runned whenever turtle1/pose topic publishes sth.
-        """
-        pub_msg = Twist()
-        # Put subscribed msg into publish msg as it is.
-        pub_msg.linear.x = msg.linear_velocity
-        pub_msg.angular.z = msg.angular_velocity
+        twist_msg = Twist()
+        distance_forward = msg.ranges[60]
 
-        self.twist_publisher.publish(pub_msg)
-        # self.get_logger().info(
-        #     f"""\nx : {msg.x:.3f} / y : {msg.y:.3f} / z : {msg.theta:.3f}
-        #         \nlinear_velocity : {msg.linear_velocity} / angular_velocity : {msg.angular_velocity }
-        #     """)
+        if distance_forward > 0.5:
+            self.get_logger().info(f'Distance from Front Object : {distance_forward}')
+            twist_msg.linear.x = 0.5
+            self.twist_publisher.publish(twist_msg)
+        else:
+            self.get_logger().info('==== Parking Done!!! ====\n')
+            twist_msg.linear.x = 0.0
+            self.twist_publisher.publish(twist_msg)
 
 def main(args=None):
     """Do enter into this main function first."""
     rclpy.init(args=args)
 
-    laser_subscriber = PoseSubTwistPubNode()
+    parking_node = ParkingNode()
 
-    rclpy.spin(laser_subscriber)
+    rclpy.spin(parking_node)
 
-    laser_subscriber.destroy_node()
+    parking_node.destroy_node()
     rclpy.shutdown()
 
 
