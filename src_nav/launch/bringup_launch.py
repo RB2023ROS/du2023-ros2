@@ -138,7 +138,7 @@ def generate_launch_description():
                               'map_subscribe_transient_local': 'true'}.items()),
                               
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(os.path.join(my_launch_dir, 'rviz_view_launch.py')),
+            PythonLaunchDescriptionSource(os.path.join(my_launch_dir, 'rviz_view_foxy_launch.py')),
             launch_arguments={'use_sim_time': use_sim_time,
                               'open_rviz': open_rviz,
                               'rviz_config': rviz_config,
