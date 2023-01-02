@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'parking_action_server = py_action_tutorial.parking_status_server:main',
         ],
     },
 )
