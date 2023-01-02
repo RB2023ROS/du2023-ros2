@@ -59,7 +59,7 @@ def generate_launch_description():
     # Start Gazebo server
     start_gazebo_server_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')),
-        # launch_arguments={'world': world_path}.items()
+        launch_arguments={'world': world_path}.items()
     )
 
     # Start Gazebo client
@@ -160,6 +160,13 @@ def generate_launch_description():
         output='screen'
     )
 
+    spawn_parking_lot = Node(
+        package='py_service_tutorial',
+        executable='spawn_model',
+        name='spawn_model',
+        output='screen'
+    )
+
     return LaunchDescription([
         declare_use_rviz,
 
@@ -185,6 +192,12 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_velocity_controller,
                 on_exit=[src_gazebo_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_velocity_controller,
+                on_exit=[spawn_parking_lot],
             )
         ),
 
