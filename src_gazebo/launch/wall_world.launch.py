@@ -46,8 +46,7 @@ def generate_launch_description():
     # gazebo
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
     pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
-    # world_path = os.path.join(pkg_path, 'worlds', '여러분의-world-file.world')
+    world_path = os.path.join(pkg_path, 'worlds', 'wall_world.world')
 
     # launch configuration
     use_rviz = LaunchConfiguration('use_rviz')

@@ -1,0 +1,4 @@
+float32 time   # Turtle will turn during this seconds  
+---
+bool success   # Success or Not
+string message # Any optional message
