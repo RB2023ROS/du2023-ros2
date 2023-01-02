@@ -6,6 +6,8 @@
   <xacro:include filename="$(find src_gazebo)/urdf/src_body.gazebo" />
   <!-- <xacro:include filename="$(find src_gazebo)/urdf/src_body.trans" /> -->
 
+  <link name="base_footprint" />
+
   <link name="base_link">
     <inertial>
       <origin xyz="0.08610442944117125 -0.0010181684635799757 0.03851437758777222" rpy="0 0 0"/>
@@ -26,6 +28,12 @@
       </geometry>
     </collision>
   </link>
+
+  <joint name="base_footprint_joint" type="fixed">
+    <parent link="base_footprint"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
 
   <link name="lf_steering_hinge_link">
     <inertial>
