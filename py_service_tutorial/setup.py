@@ -12,7 +12,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -28,6 +27,7 @@ setup(
             'take_picture_server = py_service_tutorial.take_picture_server:main',
             'turtle_circle_server_advanced = py_service_tutorial.turtle_circle_server_advanced:main',
             'turtle_jail = py_service_tutorial.turtle_jail:main',
+            'spawn_model = py_service_tutorial.spawn_model:main',
         ],
     },
 )
