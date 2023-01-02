@@ -65,7 +65,7 @@ class ParkingActionServer(Node):
             self.f_obs_distance = data.ranges[60]
             self.r_obs_distance = data.ranges[30]
             self.l_obs_distance = data.ranges[90]
-            print("sub")
+            self.get_logger().info("sub success")
 
     def execute_callback(self, goal_handle):
 
@@ -81,7 +81,6 @@ class ParkingActionServer(Node):
             self.get_logger().info(
                 f"Distance from forward obstacle : {self.f_obs_distance}"
             )
-            print(self.r_obs_distance, self.l_obs_distance)
             time.sleep(1)
 
         goal_handle.succeed()
