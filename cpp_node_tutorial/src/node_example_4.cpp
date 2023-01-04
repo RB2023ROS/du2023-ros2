@@ -20,15 +20,34 @@
  * 
  */
 class NodeClass: public rclcpp::Node {
+private:
+  size_t count;
+  rclcpp::TimerBase::SharedPtr timer;
+
+  /**
+   * @brief below method will invoked repetitively by timer
+   * 
+   */
+  void timer_callback() {
+    RCLCPP_INFO(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
+    count++;
+  }
+
 public:
-  NodeClass(): Node("example_node_4") {}
+  NodeClass() : Node("example_node_5") {
+    timer = this->create_wall_timer(
+      std::chrono::milliseconds(200),
+      // timer_callback,
+      std::bind(&NodeClass::timer_callback, this)
+    );
+  }
 };
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
   auto node = std::make_shared<NodeClass>();
-  RCLCPP_INFO(node->get_logger(), "==== Hello ROS 2 ====");
+  rclcpp::spin(node);
 
   rclcpp::shutdown();
   return 0;

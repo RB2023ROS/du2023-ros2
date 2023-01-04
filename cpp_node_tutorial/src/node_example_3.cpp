@@ -12,40 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <iostream>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 
-static int count = 0;
-
-void timer_callback(){
-  std::cout << "==== Hello ROS 2 : " << count << " ====" << std::endl;
-  count++;
-}
+/**
+ * @brief Class Type RCLCPP Node
+ * 
+ */
+class NodeClass: public rclcpp::Node {
+public:
+  NodeClass(): Node("example_node_4") {}
+};
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
 
-  auto node = rclcpp::Node::make_shared("example_node_3");
-  
-  // // Use case 1 
-  // {
-  //   auto timer = node->create_wall_timer(std::chrono::milliseconds(200), timer_callback);
-
-  //   while (rclcpp::ok())
-  //     rclcpp::spin_some(node); 
-  // }
-
-  // Use case 2
-  {
-    rclcpp::WallRate rate(5);  // Hz
-
-    while (rclcpp::ok()) {
-      rclcpp::spin_some(node);
-      timer_callback();
-      rate.sleep();
-    }
-  }
+  auto node = std::make_shared<NodeClass>();
+  RCLCPP_INFO(node->get_logger(), "==== Hello ROS 2 ====");
 
   rclcpp::shutdown();
   return 0;
