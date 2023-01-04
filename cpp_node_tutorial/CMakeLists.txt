@@ -51,8 +51,6 @@ ament_target_dependencies(example_node_4 rclcpp)
 add_executable(example_node_5 src/node_example_5.cpp)
 ament_target_dependencies(example_node_5 rclcpp)
 
-add_executable(example_node_6 src/node_example_6.cpp)
-ament_target_dependencies(example_node_6 rclcpp)
 
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
@@ -62,7 +60,6 @@ install(
     example_node_3
     example_node_4
     example_node_5
-    example_node_6
   DESTINATION 
     lib/${PROJECT_NAME}
 )
