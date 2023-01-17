@@ -29,7 +29,11 @@ private:
    * 
    */
   void timer_callback() {
+    RCLCPP_DEBUG(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
     RCLCPP_INFO(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
+    RCLCPP_WARN(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
+    RCLCPP_ERROR(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
+    RCLCPP_FATAL(this->get_logger(), "==== Hello ROS 2 : %d ====", count);
     count++;
   }
 
@@ -37,7 +41,6 @@ public:
   NodeClass() : Node("example_node_5") {
     timer = this->create_wall_timer(
       std::chrono::milliseconds(200),
-      // timer_callback,
       std::bind(&NodeClass::timer_callback, this)
     );
   }
@@ -45,6 +48,8 @@ public:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
+
+  // auto test = geometry_msgs::msg::Twist();
 
   auto node = std::make_shared<NodeClass>();
   rclcpp::spin(node);

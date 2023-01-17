@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(cpp_node_tutorial)
+project(cpp_service_tutorial)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -15,8 +15,11 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# find_package를 통해 종속성들을 추가합니다.
 find_package(rclcpp REQUIRED)
+find_package(std_srvs REQUIRED)
+find_package(turtlesim REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(custom_interfaces REQUIRED)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -36,30 +39,26 @@ if(BUILD_TESTING)
 endif()
 
 # 작성한 코드들을 빌드합니다.
-add_executable(example_node_1 src/node_example_1.cpp)
-ament_target_dependencies(example_node_1 rclcpp)
+add_executable(turtle_spawn_client src/turtle_spawn.cpp)
+ament_target_dependencies(turtle_spawn_client rclcpp turtlesim)
 
-add_executable(example_node_2 src/node_example_2.cpp)
-ament_target_dependencies(example_node_2 rclcpp)
+add_executable(turtle_circle_server src/turtle_circle_server.cpp)
+ament_target_dependencies(turtle_circle_server rclcpp geometry_msgs std_srvs)
 
-add_executable(example_node_3 src/node_example_3.cpp)
-ament_target_dependencies(example_node_3 rclcpp)
+add_executable(turtle_circle_server_advanced src/turtle_circle_server_advanced.cpp)
+ament_target_dependencies(turtle_circle_server_advanced rclcpp geometry_msgs custom_interfaces)
 
-add_executable(example_node_4 src/node_example_4.cpp)
-ament_target_dependencies(example_node_4 rclcpp)
-
-add_executable(example_node_5 src/node_example_5.cpp)
-ament_target_dependencies(example_node_5 rclcpp)
+add_executable(turtle_jail src/turtle_jail.cpp)
+ament_target_dependencies(turtle_jail rclcpp turtlesim custom_interfaces)
 
 
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
   TARGETS
-    example_node_1
-    example_node_2
-    example_node_3
-    example_node_4
-    example_node_5
+    turtle_jail
+    turtle_spawn_client
+    turtle_circle_server
+    turtle_circle_server_advanced
   DESTINATION 
     lib/${PROJECT_NAME}
 )
