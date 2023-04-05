@@ -45,11 +45,17 @@ def main(args=None):
     node = Node('node_name')
     node.create_timer(0.2, timer_callback)
 
+    # 1. spin_once() will run node only once.
+    # timeout_sec: Seconds to wait. 
+    # Block forever if ``None`` or negative. Don't wait if 0.
+    rclpy.spin_once(node, timeout_sec=10)
+
+    # # 2. spin() will run node until Ctrl+C.
+    rclpy.spin(node)
+
+    # # 3. spin_once() with while loop will run node periodically.
     while True:
         rclpy.spin_once(node, timeout_sec=10)
-
-    # rclpy.spin_once(node, timeout_sec=10)
-
 
     node.destroy_node()
 
