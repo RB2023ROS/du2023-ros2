@@ -12,6 +12,8 @@ def generate_launch_description():
     
     param_ex_node = Node(
         package = 'py_param_tutorial',
+        # namespace 지정!
+        namespace = 'robot1',
         executable = 'param_example',
         name = 'param_example',
         output='screen',
