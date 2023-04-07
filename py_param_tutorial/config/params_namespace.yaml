@@ -1,0 +1,8 @@
+/**:
+  ros__parameters:
+    string_param: "Namespaced Param"
+    int_param: 10
+    float_param: 2.718
+    arr_param: ['I', 'absolutely', 'love', 'ROS 2']
+    nested_param:
+      string_param: "Yeah Hee"
