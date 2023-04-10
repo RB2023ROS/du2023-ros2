@@ -15,6 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+find_package(rclcpp REQUIRED)
+
 # find dependencies
 find_package(ament_cmake REQUIRED)
 # uncomment the following section in order to fill in
@@ -31,5 +33,23 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+add_executable(cpp_param_example src/param_example.cpp)
+ament_target_dependencies(cpp_param_example rclcpp)
+
+install(
+  TARGETS
+    cpp_param_example
+  DESTINATION 
+    lib/${PROJECT_NAME}
+)
+
+install(
+  DIRECTORY
+    launch
+    config
+  DESTINATION
+    share/${PROJECT_NAME}/
+)
 
 ament_package()
