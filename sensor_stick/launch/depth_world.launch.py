@@ -40,13 +40,12 @@ def generate_launch_description():
 
     arg_show_rviz = DeclareLaunchArgument(
         "start_rviz",
-        default_value="false",
+        default_value="true",
         description="start RViz automatically with the launch file",
     )
 
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
     pkg_path = os.path.join(get_package_share_directory('sensor_stick'))
-    # world_path = os.path.join(pkg_path, 'world', 'gazebo_ros_depth_camera_demo.world')
     world_path = os.path.join(pkg_path, 'world', 'wall_world.world')
     
     # Start Gazebo server
@@ -72,15 +71,6 @@ def generate_launch_description():
     )
 
     robot_description = {"robot_description": robot_description_content}
-
-    # robot_state_publisher = Node(
-    #     package='robot_state_publisher',
-    #     executable='robot_state_publisher',
-    #     name='robot_state_publisher',
-    #     output='both',
-    #     parameters=[{'robot_description': Command(['xacro', ' ', xacro_file])
-    # }])
-
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -109,27 +99,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    spawn_dd_controller = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["diffbot_base_controller"],
-        output="screen",
-        # remappings=[
-        #     ("/diffbot_base_controller/cmd_vel_unstamped", "/cmd_vel")
-        # ]
-    )
-
-    spawn_jsb_controller = Node(
-        package="controller_manager",
-        executable="spawner.py",
-        arguments=["joint_state_broadcaster"],
-        output="screen",
-        remappings=[
-            ("/joint_states", "/ttttt")
-        ]
-    )
-
-    rviz_config_file = os.path.join(pkg_path, 'rviz', 'gazebo.rviz')
+    rviz_config_file = os.path.join(pkg_path, 'rviz', 'depth_cam.rviz')
     
     rviz_node = Node(
         package="rviz2",
@@ -139,60 +109,13 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("start_rviz"))
     )
 
-    ira_laser_tools = Node(
-        package="ira_laser_tools",
-        executable="laserscan_multi_merger",
-        output="screen",
-        parameters=[
-            {'destination_frame': "base_link"},
-            {'scan_destination_topic': "scan"},
-            # / 붙여야 한다.
-            {'laserscan_topics': "/front_scan /rear_scan"},
-            {'range_max': 1000.0},
-            {'range_min': 0.01},
-            {'angle_min': -3.14},
-            {'angle_max': 3.14},
-            {'angle_increment': 0.0174533},
-        ],
-    )
-
-    box_filter_config_file = os.path.join(pkg_path, 'config', 'box_filter.yaml')
-
-    box_laser_filter = Node(
-        package="laser_filters",
-        executable="scan_to_scan_filter_chain",
-        parameters=[box_filter_config_file],
-    )
-
     return LaunchDescription(
         [
             arg_show_rviz,
             start_gazebo_server_cmd,
             start_gazebo_client_cmd,
-            # joint_state_publisher,
             robot_state_publisher,
             spawn_entity,
-
-            # TimerAction(    
-            #     period=5.0,
-            #     actions=[spawn_entity]
-            # ),
-
-            # RegisterEventHandler(
-            #     event_handler=OnProcessExit(
-            #         target_action=spawn_entity,
-            #         on_exit=[spawn_dd_controller],
-            #     )
-            # ),
-            # RegisterEventHandler(
-            #     event_handler=OnProcessExit(
-            #         target_action=spawn_dd_controller,
-            #         on_exit=[spawn_jsb_controller],
-            #     )
-            # ),
-            
-            # box_laser_filter,
-            # ira_laser_tools,
-            # rviz_node,
+            rviz_node,
         ]
     )

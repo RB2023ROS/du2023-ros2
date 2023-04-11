@@ -38,6 +38,7 @@ install(
     launch
     meshes
     world
+    rviz
     urdf
   DESTINATION
     share/${PROJECT_NAME}/
