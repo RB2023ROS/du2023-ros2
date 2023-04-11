@@ -3,7 +3,7 @@
 
 class ParamExNode : public rclcpp::Node
 {
-private:
+public:
     ParamExNode() : Node("param_ex_node") {
 
         this->declare_parameter("string_param", "world");
@@ -24,12 +24,10 @@ private:
         std::vector<double> my_double_array = arr_param.as_double_array();
         std::string my_nested_str = nested_param.as_string();
         
-        RCLCPP_INFO(this->get_logger(), "str: %s, int: %s, double: %s, arr: %s, nested: %s",
-                    str_param.value_to_string().c_str(),
-                    int_param.value_to_string().c_str(),
-                    double_param.value_to_string().c_str(),
+        RCLCPP_INFO(this->get_logger(), "\nstr: %s \nint: %d \ndouble: %f \narr: %s \nnested: %s",
+                    my_str.c_str(), my_int, my_double,
                     arr_param.value_to_string().c_str(),
-                    nested_param.value_to_string().c_str());
+                    my_nested_str.c_str());
     }
 };
 

@@ -3,6 +3,6 @@ param_example:
     string_param: "Yaml Yaml"
     int_param: 5
     float_param: 3.14
-    arr_param: ['I', 'love', 'ROS 2']
+    arr_param: [1.0, 2.0, 3.0]
     nested_param:
       string_param: "Ooh Wee"

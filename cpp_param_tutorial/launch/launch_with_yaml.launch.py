@@ -7,14 +7,12 @@ from launch_ros.actions import Node
 def generate_launch_description():
 
     config = os.path.join(
-        get_package_share_directory('py_param_tutorial'), 'config', 'params.yaml'
+        get_package_share_directory('cpp_param_tutorial'), 'config', 'params.yaml'
     )
     
     param_ex_node = Node(
-        package = 'py_param_tutorial',
-        # namespace 지정!
-        namespace = 'robot1',
-        executable = 'param_example',
+        package = 'cpp_param_tutorial',
+        executable = 'cpp_param_example',
         name = 'param_example',
         output='screen',
         parameters = [config]
