@@ -1,0 +1,198 @@
+# Copyright 2020 ros2_control Development Team
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import os
+from osrf_pycommon.terminal_color import ansi
+
+from launch import LaunchDescription
+from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
+
+from launch.conditions import IfCondition
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.actions import IncludeLaunchDescription, TimerAction
+from launch_ros.actions import Node
+
+from launch_ros.substitutions import FindPackageShare
+from ament_index_python.packages import get_package_share_directory
+from launch.launch_description_sources import PythonLaunchDescriptionSource
+
+def generate_launch_description():
+
+    # gz model path edit
+    gazebo_model_path = os.path.join(get_package_share_directory('src_gazebo'), 'models')
+    if 'GAZEBO_MODEL_PATH' in os.environ:
+        os.environ['GAZEBO_MODEL_PATH'] += ":" + gazebo_model_path
+    else :
+        os.environ['GAZEBO_MODEL_PATH'] = gazebo_model_path
+    print(ansi("yellow"), "If it's your 1st time to download Gazebo model on your computer, it may take few minutes to finish.", ansi("reset"))
+
+
+    arg_show_rviz = DeclareLaunchArgument(
+        "start_rviz",
+        default_value="false",
+        description="start RViz automatically with the launch file",
+    )
+
+    pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
+    pkg_path = os.path.join(get_package_share_directory('sensor_stick'))
+    # world_path = os.path.join(pkg_path, 'world', 'gazebo_ros_depth_camera_demo.world')
+    world_path = os.path.join(pkg_path, 'world', 'wall_world.world')
+    
+    # Start Gazebo server
+    start_gazebo_server_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')),
+        launch_arguments={'world': world_path}.items()
+    )
+
+    # Start Gazebo client
+    start_gazebo_client_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py'))
+    )
+    
+    # Get URDF via xacro
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("sensor_stick"), "urdf", "sensor_stick.urdf.xacro"]
+            ),
+        ]
+    )
+
+    robot_description = {"robot_description": robot_description_content}
+
+    # robot_state_publisher = Node(
+    #     package='robot_state_publisher',
+    #     executable='robot_state_publisher',
+    #     name='robot_state_publisher',
+    #     output='both',
+    #     parameters=[{'robot_description': Command(['xacro', ' ', xacro_file])
+    # }])
+
+
+    robot_state_publisher = Node(
+        package='robot_state_publisher',
+        executable='robot_state_publisher',
+        output='screen',
+        parameters=[robot_description]
+    )
+
+    joint_state_publisher = Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher'
+    )
+
+    # Spawn Robot
+    spawn_entity = Node(
+        package='gazebo_ros', 
+        executable='spawn_entity.py',
+        arguments=[
+            '-topic', 'robot_description',
+            '-entity', 'sensor_stick',
+            '-x', str(0),
+            '-y', str(0),
+            '-Y', str(1.5707),
+        ],
+        output='screen'
+    )
+
+    spawn_dd_controller = Node(
+        package="controller_manager",
+        executable="spawner.py",
+        arguments=["diffbot_base_controller"],
+        output="screen",
+        # remappings=[
+        #     ("/diffbot_base_controller/cmd_vel_unstamped", "/cmd_vel")
+        # ]
+    )
+
+    spawn_jsb_controller = Node(
+        package="controller_manager",
+        executable="spawner.py",
+        arguments=["joint_state_broadcaster"],
+        output="screen",
+        remappings=[
+            ("/joint_states", "/ttttt")
+        ]
+    )
+
+    rviz_config_file = os.path.join(pkg_path, 'rviz', 'gazebo.rviz')
+    
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=["-d", rviz_config_file],
+        condition=IfCondition(LaunchConfiguration("start_rviz"))
+    )
+
+    ira_laser_tools = Node(
+        package="ira_laser_tools",
+        executable="laserscan_multi_merger",
+        output="screen",
+        parameters=[
+            {'destination_frame': "base_link"},
+            {'scan_destination_topic': "scan"},
+            # / 붙여야 한다.
+            {'laserscan_topics': "/front_scan /rear_scan"},
+            {'range_max': 1000.0},
+            {'range_min': 0.01},
+            {'angle_min': -3.14},
+            {'angle_max': 3.14},
+            {'angle_increment': 0.0174533},
+        ],
+    )
+
+    box_filter_config_file = os.path.join(pkg_path, 'config', 'box_filter.yaml')
+
+    box_laser_filter = Node(
+        package="laser_filters",
+        executable="scan_to_scan_filter_chain",
+        parameters=[box_filter_config_file],
+    )
+
+    return LaunchDescription(
+        [
+            arg_show_rviz,
+            start_gazebo_server_cmd,
+            start_gazebo_client_cmd,
+            # joint_state_publisher,
+            robot_state_publisher,
+            spawn_entity,
+
+            # TimerAction(    
+            #     period=5.0,
+            #     actions=[spawn_entity]
+            # ),
+
+            # RegisterEventHandler(
+            #     event_handler=OnProcessExit(
+            #         target_action=spawn_entity,
+            #         on_exit=[spawn_dd_controller],
+            #     )
+            # ),
+            # RegisterEventHandler(
+            #     event_handler=OnProcessExit(
+            #         target_action=spawn_dd_controller,
+            #         on_exit=[spawn_jsb_controller],
+            #     )
+            # ),
+            
+            # box_laser_filter,
+            # ira_laser_tools,
+            # rviz_node,
+        ]
+    )

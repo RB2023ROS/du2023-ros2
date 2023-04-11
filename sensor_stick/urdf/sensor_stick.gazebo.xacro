@@ -71,11 +71,11 @@
 
       <plugin name="depth_camera_controller" filename="libgazebo_ros_camera.so">
         <!-- Change namespace, camera name and topics so -
-             * Raw images are published to: /custom_ns/custom_camera/custom_image
-             * Depth images are published to: /custom_ns/custom_camera/custom_image_depth
-             * Raw image camera info is published to: /custom_ns/custom_camera/custom_info_raw
-             * Depth image camera info is published to: /custom_ns/custom_camera/custom_info_depth
-             * Point cloud is published to: /custom_ns/custom_camera/custom_points
+             * Raw images are published to /custom_ns/custom_camera/custom_image
+             * Depth images are published to /custom_ns/custom_camera/custom_image_depth
+             * Raw image camera info is published to /custom_ns/custom_camera/custom_info_raw
+             * Depth image camera info is published to /custom_ns/custom_camera/custom_info_depth
+             * Point cloud is published to /custom_ns/custom_camera/custom_points
         -->
         <ros>
           <namespace>sensor_stick</namespace>
@@ -90,7 +90,7 @@
         <!-- Set TF frame name. If empty, defaults to link name (i.e. "link_name") -->
         <!-- <frame_name>custom_frame</frame_name> -->
         <!-- hackbaseline is the length of baseline, its an important parameter for stereo camera. -->
-        <!-- hackbaseline reference : http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/CameraInfo.html -->
+        <!-- hackbaseline reference  http://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/CameraInfo.html -->
         <!-- <hack_baseline>0.07</hack_baseline> -->
 
         <!-- No need to repeat distortion parameters or to set autoDistortion -->

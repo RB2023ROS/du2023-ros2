@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
 <robot name="sensor_stick" xmlns:xacro="http://www.ros.org/wiki/xacro">
-
-  <!--Define constants-->
   <xacro:property name="PI" value="3.14159"/>
   <xacro:property name="mass1" value="10" />
   <xacro:property name="mass2" value="1" />
@@ -82,7 +80,7 @@
   <visual>
     <origin xyz="0 0 0" rpy="0 0 0"/>
     <geometry>
-      <mesh filename="package://sensor_stick/meshes/asus_xtion.dae"/>
+      <mesh filename="$(find sensor_stick)/meshes/asus_xtion.dae"/>
     </geometry>
   </visual>
   <inertial>
