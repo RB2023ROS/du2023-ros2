@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <memory>
 #include "rclcpp/rclcpp.hpp"
 
 /**
@@ -48,8 +47,6 @@ public:
 
 int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
-
-  // auto test = geometry_msgs::msg::Twist();
 
   auto node = std::make_shared<NodeClass>();
   rclcpp::spin(node);

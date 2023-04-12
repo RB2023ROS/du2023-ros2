@@ -12,10 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <iostream>
-#include <memory>
 #include "rclcpp/rclcpp.hpp"
-
+#include <typeinfo>
 using namespace std::chrono_literals;
 
 static int count = 0;
@@ -29,6 +27,9 @@ int main(int argc, char **argv) {
   rclcpp::init(argc, argv);
   auto node = rclcpp::Node::make_shared("example_node_2");
   auto timer = node->create_wall_timer(200ms, timer_callback);
+
+  std::cout << typeid(node).name() << std::endl;
+  std::cout << typeid(timer).name() << std::endl;
 
   rclcpp::spin(node); 
 
