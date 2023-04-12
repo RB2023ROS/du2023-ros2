@@ -21,9 +21,16 @@ public:
         std::string my_str = str_param.as_string();
         int my_int = int_param.as_int();
         double my_double = double_param.as_double();
-        std::vector<double> my_double_array = arr_param.as_double_array();
+        std::vector<double> my_arr = arr_param.as_double_array();
         std::string my_nested_str = nested_param.as_string();
         
+        /** simplified version of above */
+        // auto my_str = this->get_parameter("string_param").as_string();
+        // auto my_int = this->get_parameter("int_param").as_int();
+        // auto my_double = this->get_parameter("double_param").as_double();
+        // auto my_arr = this->get_parameter("arr_param").as_double_array();
+        // auto my_nested_str = this->get_parameter("nested_param.string_param").as_string();
+
         RCLCPP_INFO(this->get_logger(), "\nstr: %s \nint: %d \ndouble: %f \narr: %s \nnested: %s",
                     my_str.c_str(), my_int, my_double,
                     arr_param.value_to_string().c_str(),
