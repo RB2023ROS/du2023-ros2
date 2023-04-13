@@ -1,6 +1,4 @@
-#!/usr/bin/env python3
-#
-# Copyright 2022 RoadBalance Inc.
+# Copyright 2020 ros2_control Development Team
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,48 +13,33 @@
 # limitations under the License.
 
 import os
-
-from osrf_pycommon.terminal_color import ansi
-
-from ament_index_python.packages import get_package_share_directory
+import xacro
 
 from launch import LaunchDescription
 from launch.event_handlers import OnProcessExit
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
-from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
-from launch.actions import TimerAction
 
+from launch.conditions import IfCondition
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+from launch.actions import IncludeLaunchDescription
 from launch_ros.actions import Node
-from launch_ros.substitutions import FindPackageShare
 
-import xacro
+from launch_ros.substitutions import FindPackageShare
+from ament_index_python.packages import get_package_share_directory
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
 
-    # gz model path edit
-    gazebo_model_path = os.path.join(get_package_share_directory('src_gazebo'), 'models')
-    if 'GAZEBO_MODEL_PATH' in os.environ:
-        os.environ['GAZEBO_MODEL_PATH'] += ":" + gazebo_model_path
-    else:
-        os.environ['GAZEBO_MODEL_PATH'] = gazebo_model_path
-    print(ansi("yellow"), "If it's your 1st time to download Gazebo model on your computer, it may take few minutes to finish.", ansi("reset"))
+    arg_show_rviz = DeclareLaunchArgument(
+        "start_rviz",
+        default_value="false",
+        description="start RViz automatically with the launch file",
+    )
 
-    # gazebo
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
     pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
-    # world_path = os.path.join(pkg_path, 'worlds', 'any-world-file.world')
-
-    # launch configuration
-    use_rviz = LaunchConfiguration('use_rviz')
-
-    declare_use_rviz = DeclareLaunchArgument(
-        name='use_rviz',
-        default_value='True',
-        description='Whether to start RVIZ')
-
+    world_path = os.path.join(pkg_path, 'worlds', 'garage.world')
+    
     # Start Gazebo server
     start_gazebo_server_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')),
@@ -67,14 +50,18 @@ def generate_launch_description():
     start_gazebo_client_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py'))
     )
-
-    # Robot State Publisher
-    pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
-
-    doc = xacro.parse(open(urdf_file))
-    xacro.process_doc(doc)
-    robot_description = {'robot_description': doc.toxml()}
+    
+    # Get URDF via xacro
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("src_gazebo"), "urdf", "src_body.urdf.xacro"]
+            ),
+        ]
+    )
+    robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
@@ -83,19 +70,10 @@ def generate_launch_description():
         parameters=[robot_description]
     )
 
-    # Joint State Publisher
     joint_state_publisher = Node(
         package='joint_state_publisher',
         executable='joint_state_publisher',
         name='joint_state_publisher'
-    )
-
-    # rqt robot steering
-    rqt_robot_steering = Node(
-        package='rqt_robot_steering',
-        executable='rqt_robot_steering',
-        name='rqt_robot_steering',
-        output='screen'
     )
 
     # Spawn Robot
@@ -142,15 +120,13 @@ def generate_launch_description():
     )
 
     rviz_config_file = os.path.join(pkg_path, 'rviz', 'gazebo.rviz')
-
-    # Launch RViz
-    rviz = Node(
-        condition=IfCondition(use_rviz),
-        package='rviz2',
-        executable='rviz2',
-        name='rviz2',
-        output='screen',
-        arguments=['-d', rviz_config_file]
+    
+    rviz_node = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        arguments=["-d", rviz_config_file],
+        condition=IfCondition(LaunchConfiguration("start_rviz"))
     )
 
     # rqt robot steering
@@ -162,7 +138,7 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        declare_use_rviz,
+        arg_show_rviz,
 
         RegisterEventHandler(
             event_handler=OnProcessExit(
@@ -189,15 +165,10 @@ def generate_launch_description():
             )
         ),
 
-        # TimerAction(    
-        #     period=7.0,
-        #     actions=[rviz]
-        # ),
-
         start_gazebo_server_cmd,
         start_gazebo_client_cmd,
         robot_state_publisher,
-        joint_state_publisher,
         spawn_entity,
         rqt_robot_steering,
+        # rviz_node,
     ])

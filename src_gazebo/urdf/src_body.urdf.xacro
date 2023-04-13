@@ -4,7 +4,6 @@
   <xacro:include filename="$(find src_gazebo)/urdf/materials.xacro" />
   <xacro:include filename="$(find src_gazebo)/urdf/macros.xacro" />
   <xacro:include filename="$(find src_gazebo)/urdf/src_body.gazebo" />
-  <!-- <xacro:include filename="$(find src_gazebo)/urdf/src_body.trans" /> -->
 
   <link name="base_footprint" />
 
