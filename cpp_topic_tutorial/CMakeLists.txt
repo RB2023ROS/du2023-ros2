@@ -47,12 +47,17 @@ ament_target_dependencies(topic_sub_node rclcpp turtlesim)
 add_executable(mimic_node src/topic_example_3_mimic.cpp)
 ament_target_dependencies(mimic_node rclcpp geometry_msgs)
 
+add_executable(cpp_topic_pub_node src/cpp_topic_pub_node.cpp)
+ament_target_dependencies(cpp_topic_pub_node rclcpp geometry_msgs)
+
+
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
   TARGETS
     topic_pub_node
     topic_sub_node
     mimic_node
+    cpp_topic_pub_node
   DESTINATION 
     lib/${PROJECT_NAME}
 )
