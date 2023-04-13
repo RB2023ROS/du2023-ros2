@@ -9,11 +9,11 @@ private:
   rclcpp::Subscription<LaserScan>::SharedPtr laser_subscriber;
 
   void sub_callback(const LaserScan::SharedPtr msg){
-
-    
-
-    RCLCPP_INFO(this->get_logger(), "angle_min: %.3f/ angle_max: %.3f/ angle_increment: %.3f/ time_increment: %.3f, scan_time: %.3f",
-      msg->angle_min, msg->angle_max, msg->angle_increment, msg->time_increment, msg->scan_time);
+    RCLCPP_INFO(this->get_logger(), "msg.ranges[0]: '%f'", msg->ranges[0]);
+    RCLCPP_INFO(this->get_logger(), "msg.ranges[30]: '%f'", msg->ranges[30]);
+    RCLCPP_INFO(this->get_logger(), "msg.ranges[60]: '%f'", msg->ranges[60]);
+    RCLCPP_INFO(this->get_logger(), "msg.ranges[90]: '%f'", msg->ranges[90]);
+    RCLCPP_INFO(this->get_logger(), "msg.ranges[119]: '%f'\n", msg->ranges[119]);
   }
 public:
   LaserSubNode() : Node("laser_sub_node")
@@ -29,7 +29,7 @@ int main(int argc, char **argv)
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::spin(std::make_shared<TwistPubNode>());
+  rclcpp::spin(std::make_shared<LaserSubNode>());
 
   rclcpp::shutdown();
   return 0;

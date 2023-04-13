@@ -19,6 +19,7 @@ endif()
 find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -50,6 +51,12 @@ ament_target_dependencies(mimic_node rclcpp geometry_msgs)
 add_executable(cpp_topic_pub_node src/cpp_topic_pub_node.cpp)
 ament_target_dependencies(cpp_topic_pub_node rclcpp geometry_msgs)
 
+add_executable(cpp_topic_sub_node src/cpp_topic_sub_node.cpp)
+ament_target_dependencies(cpp_topic_sub_node rclcpp sensor_msgs)
+
+add_executable(cpp_parking_node src/cpp_parking_node.cpp)
+ament_target_dependencies(cpp_parking_node rclcpp sensor_msgs geometry_msgs)
+
 
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
@@ -58,6 +65,8 @@ install(
     topic_sub_node
     mimic_node
     cpp_topic_pub_node
+    cpp_topic_sub_node
+    cpp_parking_node
   DESTINATION 
     lib/${PROJECT_NAME}
 )
