@@ -26,8 +26,10 @@ setup(
             'turtle_circle_server = py_service_tutorial.turtle_circle_server:main',
             'take_picture_server = py_service_tutorial.take_picture_server:main',
             'turtle_circle_server_advanced = py_service_tutorial.turtle_circle_server_advanced:main',
-            'turtle_jail = py_service_tutorial.turtle_jail:main',
-            'spawn_model = py_service_tutorial.spawn_model:main',
+            'turtle_jail  = py_service_tutorial.turtle_jail:main',
+            'spawn_object_wo_gravity = py_service_tutorial.spawn_object_wo_gravity:main',
+            'spawn_model  = py_service_tutorial.spawn_model:main',
+            'spawn_object = py_service_tutorial.spawn_object:main',
         ],
     },
 )
