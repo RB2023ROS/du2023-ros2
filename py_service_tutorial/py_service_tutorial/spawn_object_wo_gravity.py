@@ -43,6 +43,25 @@ class SpawnClientNode(Node):
             get_package_share_directory('rgbd_world'), 'models',
         )
 
+        self.model_dict = {
+            "1": "arm_part",
+            "2": "beer",
+            "3": "biscuits",
+            "4": "book",
+            "5": "bowl",
+            "6": "create",
+            "7": "disk_part",
+            "8": "eraser",
+            "9": "glue",
+            "10": "hammer",
+            "11": "plastic_cup",
+            "12": "snacks",
+            "13": "soap",
+            "14": "soap2",
+            "15": "soda_can",
+            "16": "sticky_notes"
+        }
+
     def send_pause_req(self):
 
         self.req = Empty.Request()
@@ -51,8 +70,18 @@ class SpawnClientNode(Node):
         return self.future
 
     def send_spawn_req(self):
+        
+        # model_name = "beer"
+        model_id = input("""Enter Model name Among Below List
+        1.arm_part\t2.beer         \t3.biscuits
+        4.book     \t5.bowl        \t6.create
+        7.disk_part\t8.eraser      \t9.glue
+        10.hammer  \t11.plastic_cup\t12.snacks
+        13.soap    \t14.soap2      \t15.soda_can
+        16.sticky_notes
+        [Type your choice]: """)
+        model_name = self.model_dict[model_id]
 
-        model_name = "beer"
         model_path = os.path.join(self.sdf_file_path, model_name)
 
         with open (model_path + '/model.sdf', 'r') as xml_file:
@@ -61,24 +90,13 @@ class SpawnClientNode(Node):
         self.req = SpawnEntity.Request()
         self.req.name = model_name
         self.req.xml = model_xml
-        # self.req.xml = open(self.sdf_file_path, 'r').read()
 
         self.req.initial_pose.position.x = 1.0
-        self.req.initial_pose.position.y = 0.25
-        self.req.initial_pose.position.z = 1.3
+        self.req.initial_pose.position.y = 0.0
+        self.req.initial_pose.position.z = 1.0
 
         self.req.initial_pose.orientation.z = 0.707
         self.req.initial_pose.orientation.w = 0.707
-
-        # if self.model_count % 2 == 0:
-        #     self.req.initial_pose.position.y = self.y_offset + 0.25
-        # else:
-        #     self.req.initial_pose.position.y = self.y_offset - 0.25
-
-        # self.req.initial_pose.position.z = 0.3 * self.model_count
-        
-        # self.req.initial_pose.orientation.z = 0.707
-        # self.req.initial_pose.orientation.w = 0.707
 
         self.get_logger().debug('==== Sending service request to `/spawn_entity` ====')
         self.future = self.spawn_client.call_async(self.req)

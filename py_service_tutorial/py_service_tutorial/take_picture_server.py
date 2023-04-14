@@ -37,12 +37,14 @@ class PictureNode(Node):
     def __init__(self):
         super().__init__('turtle_circle_server')
 
+        self.img_topic_name = "/rgb_cam/rgb_cam/image_raw"
+
         self.server = self.create_service(
             SetBool, 'take_picture', self.take_picture_callback
         )
 
         self.subscriber = self.create_subscription(
-            Image, 'logi_camera_sensor/image_raw', self.sub_callback, 10
+            Image, self.img_topic_name, self.sub_callback, 10
         )
 
         self.br = CvBridge()
@@ -62,7 +64,7 @@ class PictureNode(Node):
     def take_picture_callback(self, request, response):
 
         if request.data is True:
-            self.get_logger().info('KimChi~')
+            self.get_logger().warn('KimChi~')
             self.is_request = True
 
         response.success = True
