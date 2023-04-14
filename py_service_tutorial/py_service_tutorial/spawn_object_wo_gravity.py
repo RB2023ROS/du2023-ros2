@@ -95,8 +95,8 @@ class SpawnClientNode(Node):
         self.req.initial_pose.position.y = 0.0
         self.req.initial_pose.position.z = 1.0
 
-        self.req.initial_pose.orientation.z = 0.707
-        self.req.initial_pose.orientation.w = 0.707
+        # self.req.initial_pose.orientation.z = 0.707
+        # self.req.initial_pose.orientation.w = 0.707
 
         self.get_logger().debug('==== Sending service request to `/spawn_entity` ====')
         self.future = self.spawn_client.call_async(self.req)

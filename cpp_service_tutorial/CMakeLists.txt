@@ -18,6 +18,7 @@ endif()
 find_package(rclcpp REQUIRED)
 find_package(std_srvs REQUIRED)
 find_package(turtlesim REQUIRED)
+find_package(gazebo_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(custom_interfaces REQUIRED)
 
@@ -51,6 +52,8 @@ ament_target_dependencies(turtle_circle_server_advanced rclcpp geometry_msgs cus
 add_executable(turtle_jail src/turtle_jail.cpp)
 ament_target_dependencies(turtle_jail rclcpp turtlesim custom_interfaces)
 
+add_executable(spawn_object_wo_gravity src/spawn_object_wo_gravity.cpp)
+ament_target_dependencies(spawn_object_wo_gravity rclcpp std_srvs gazebo_msgs)
 
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
@@ -59,6 +62,7 @@ install(
     turtle_spawn_client
     turtle_circle_server
     turtle_circle_server_advanced
+    spawn_object_wo_gravity
   DESTINATION 
     lib/${PROJECT_NAME}
 )
