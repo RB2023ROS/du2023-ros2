@@ -35,6 +35,7 @@ if(BUILD_TESTING)
 endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/DataGen.action"
   "action/Parking.action"
   "srv/CircleTurtle.srv"
   "srv/TurtleJail.srv"
