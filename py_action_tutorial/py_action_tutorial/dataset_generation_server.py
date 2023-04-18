@@ -34,7 +34,14 @@ from custom_interfaces.action import DataGen
 from sensor_msgs.msg import LaserScan
 from sensor_msgs.msg import Image 
 
-# /rgb_cam/rgb_cam/image_raw
+angle_list = [
+    [ 0.7070727, 0.0, 0.0, 0.7071408 ],
+    [ 0.7070727, 0.0, 0.0, -0.7071408 ],
+    [ 0.0, 0.8509035, 0.0, 0.525322 ],
+    [ 0.0, -0.8509035, 0.0, 0.525322 ],
+    [ 0.0, 0.0, 0.8509035, 0.525322 ],
+    [ 0.0, 0.0, -0.8509035, 0.525322 ],
+]
 
 class DatasetGen(Node):
 
@@ -73,6 +80,8 @@ class DatasetGen(Node):
             goal_callback=self.goal_callback,
         )
 
+        self.rate = self.create_rate(0.3)
+
         self.is_request = False
         self.model_name = None
         self.x, self.y, self.z = None, None, None
@@ -87,11 +96,11 @@ class DatasetGen(Node):
         req = DeleteEntity.Request()
         req.name = model_name
 
-        return self.delete_client.call_async(req)
+        return self.delete_client.call(req)
 
-    def send_spawn_req(self):
+    def send_spawn_req(self, i):
 
-        model_name = "beer"
+        model_name = self.model_name
 
         model_path = os.path.join(self.sdf_file_path, model_name)
 
@@ -102,19 +111,24 @@ class DatasetGen(Node):
         req.name = model_name
         req.xml = model_xml
 
-        req.initial_pose.position.x = 1.0
-        req.initial_pose.position.y = 0.0
-        req.initial_pose.position.z = 1.0
+        req.initial_pose.position.x = self.x
+        req.initial_pose.position.y = self.y
+        req.initial_pose.position.z = self.z
 
-        # req.initial_pose.orientation.z = 0.707
-        # req.initial_pose.orientation.w = 0.707
+        angle = angle_list[i]
 
-        return self.spawn_client.call_async(req)
+        req.initial_pose.orientation.x = angle[0]
+        req.initial_pose.orientation.y = angle[1]
+        req.initial_pose.orientation.z = angle[2]
+        req.initial_pose.orientation.w = angle[3]
+
+        return self.spawn_client.call(req)
 
     def img_sub_callback(self, data):
 
         if self.is_request:
             current_frame = self.br.imgmsg_to_cv2(data, "bgr8")
+            self.rate.sleep()
 
             file_name = str(self.get_clock().now().to_msg().sec) + '.png'
             cv2.imwrite(file_name, current_frame)
@@ -128,31 +142,20 @@ class DatasetGen(Node):
 
         feedback_msg = DataGen.Feedback()
 
-        _ = self.send_spawn_req()
-        self.get_logger().info('spawn_entity done')
-
-        self.is_request = True
-
-        while self.is_request is True:
-            continue
+        for i in range(len(angle_list)):
+            _ = self.send_spawn_req(i)
+            self.get_logger().info('spawn_entity done')
+            self.rate.sleep()
             
-        # _ = self.send_delete_req()
-        # self.get_logger().info('delete_entity done')
+            self.is_request = True
+            self.rate.sleep()
 
-        # for i in range(3):
-        #     _ = self.send_spawn_req()
-        #     self.get_logger().info('spawn_entity done')
+            _ = self.send_delete_req()
+            self.get_logger().info('delete_entity done')
+            self.rate.sleep()
 
-        #     self.is_request = True
-
-        #     while self.is_request is True:
-        #         continue
-                
-        #     _ = self.send_delete_req()
-        #     self.get_logger().info('delete_entity done')
-
-        #     feedback_msg.message = "Done Ongoing"
-        #     goal_handle.publish_feedback(feedback_msg)
+            feedback_msg.message = "Done Ongoing"
+            goal_handle.publish_feedback(feedback_msg)
 
         goal_handle.succeed()
         result = DataGen.Result()
@@ -179,27 +182,19 @@ def main(args=None):
 
     rclpy.init(args=args)
 
-    # parking_action_server = DatasetGen()
-    # rclpy.spin(parking_action_server)
-    # parking_action_server.destroy_node()
-    # rclpy.shutdown()
-
+    # MultiThreadedExecutor  ref
+    # https://url.kr/x4kf2b
     parking_action_server = DatasetGen()
     executor = MultiThreadedExecutor()
     executor.add_node(parking_action_server)
 
     try:
-        # MultiThreadedExecutor  ref
-        # https://url.kr/x4kf2b
-        
-        try:
-            executor.spin()
-        except KeyboardInterrupt:
-            parking_action_server.get_logger().info('Keyboard Interrupt (SIGINT)')
-        finally:
-            executor.shutdown()
-            parking_action_server.destroy_node()
+        executor.spin()
+    except KeyboardInterrupt:
+        parking_action_server.get_logger().info('Keyboard Interrupt (SIGINT)')
     finally:
+        executor.shutdown()
+        parking_action_server.destroy_node()
         rclpy.shutdown()
 
 if __name__ == '__main__':
