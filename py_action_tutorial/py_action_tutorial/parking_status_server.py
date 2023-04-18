@@ -104,20 +104,19 @@ def main(args=None):
     # parking_action_server.destroy_node()
     # rclpy.shutdown()
 
+    parking_action_server = ParkingActionServer()
+    # MultiThreadedExecutor  ref
+    # https://url.kr/x4kf2b
+    executor = MultiThreadedExecutor()
+    executor.add_node(parking_action_server)
+
     try:
-        parking_action_server = ParkingActionServer()
-        # MultiThreadedExecutor  ref
-        # https://url.kr/x4kf2b
-        executor = MultiThreadedExecutor()
-        executor.add_node(parking_action_server)
-        try:
-            executor.spin()
-        except KeyboardInterrupt:
-            parking_action_server.get_logger().info('Keyboard Interrupt (SIGINT)')
-        finally:
-            executor.shutdown()
-            parking_action_server.destroy_node()
+        executor.spin()
+    except KeyboardInterrupt:
+        parking_action_server.get_logger().info('Keyboard Interrupt (SIGINT)')
     finally:
+        executor.shutdown()
+        parking_action_server.destroy_node()
         rclpy.shutdown()
 
 if __name__ == '__main__':
