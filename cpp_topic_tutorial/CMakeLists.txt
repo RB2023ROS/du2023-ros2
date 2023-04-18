@@ -20,6 +20,10 @@ find_package(rclcpp REQUIRED)
 find_package(turtlesim REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(OpenCV REQUIRED)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -57,7 +61,9 @@ ament_target_dependencies(cpp_topic_sub_node rclcpp sensor_msgs)
 add_executable(cpp_parking_node src/cpp_parking_node.cpp)
 ament_target_dependencies(cpp_parking_node rclcpp sensor_msgs geometry_msgs)
 
-
+add_executable(cv_publisher src/cv_publisher.cpp)
+ament_target_dependencies(cv_publisher rclcpp std_msgs sensor_msgs cv_bridge image_transport OpenCV)
+ 
 # 빌드 완료된 실행 프로그램들은 아래 폴더에 위치합니다.
 install(
   TARGETS
@@ -67,6 +73,7 @@ install(
     cpp_topic_pub_node
     cpp_topic_sub_node
     cpp_parking_node
+    cv_publisher
   DESTINATION 
     lib/${PROJECT_NAME}
 )

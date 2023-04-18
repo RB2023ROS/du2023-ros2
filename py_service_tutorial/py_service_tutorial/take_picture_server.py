@@ -17,7 +17,6 @@
 import cv2
 import rclpy
 
-from geometry_msgs.msg import Twist
 from example_interfaces.srv import SetBool
 
 from rclpy.node import Node
