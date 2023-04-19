@@ -18,11 +18,10 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "std_srvs/srv/set_bool.hpp"
 #include "sensor_msgs/msg/image.hpp"
 #include "example_interfaces/srv/set_bool.hpp"
 
-using SetBool = std_srvs::srv::SetBool;
+using SetBool = example_interfaces::srv::SetBool;
 using Image   = sensor_msgs::msg::Image;
 
 /**
@@ -42,8 +41,8 @@ private:
   rclcpp::Service<SetBool>::SharedPtr bool_server;
   rclcpp::Subscription<Image>::SharedPtr image_subscriber;
 
-  void img_sub_callback(const Image::ConstSharedPtr &msg){
-    if (!this->is_request){
+  void img_sub_callback(const Image::ConstSharedPtr msg){
+    if (this->is_request){
       cv::Mat img = cv_bridge::toCvShare(msg, "bgr8")->image;
       // cv::Mat matFromImage(const sensor_msgs::msg::Image & source)
 
