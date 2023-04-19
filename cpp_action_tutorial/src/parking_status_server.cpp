@@ -29,12 +29,12 @@ private:
   
   bool is_sub = false;
   bool is_done = false;
-  double f_obs_distance = 100.0;
-  double r_obs_distance = 100.0;
-  double l_obs_distance = 100.0;
+  double f_obs_distance = 5.0;
+  double r_obs_distance = 5.0;
+  double l_obs_distance = 5.0;
 
 public:
-  ParkingActionServer() : Node("fb_action_server") {
+  ParkingActionServer() : Node("parking_action_server") {
     using namespace std::placeholders;
     // Create an action server with three callbacks
     //   'handle_goal' and 'handle_cancel' are called by the Executor
@@ -98,19 +98,18 @@ public:
     auto feedback = std::make_shared<Parking::Feedback>();
     auto result = std::make_shared<Parking::Result>();
 
-    std::cout << "f_obs_distance" << f_obs_distance << std::endl;
-
-    while (f_obs_distance > 0.5) {
+    while (f_obs_distance > 0.5 && is_done == false) {
       if (goal_handle->is_canceling()) {
         result->message = "Canceled";
         goal_handle->canceled(result);
+        is_done = true;
         RCLCPP_WARN(get_logger(), "Goal Canceled");
         return;
       }
       
       feedback->distance = f_obs_distance;
       goal_handle->publish_feedback(feedback);
-      RCLCPP_INFO(get_logger(), "Distance from forward obstacle %d", f_obs_distance);
+      RCLCPP_INFO(get_logger(), "Distance from forward obstacle %f", f_obs_distance);
       
       loop_rate.sleep();
     }

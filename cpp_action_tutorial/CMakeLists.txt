@@ -41,9 +41,14 @@ endif()
 add_executable(parking_status_server src/parking_status_server.cpp)
 ament_target_dependencies(parking_status_server rclcpp custom_interfaces rclcpp_action sensor_msgs)
 
+add_executable(parking_status_client src/parking_status_client.cpp)
+ament_target_dependencies(parking_status_client rclcpp custom_interfaces rclcpp_action sensor_msgs)
+
+
 install(
   TARGETS
     parking_status_server
+    parking_status_client
   DESTINATION 
     lib/${PROJECT_NAME}
 )

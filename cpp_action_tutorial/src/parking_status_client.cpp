@@ -13,119 +13,79 @@
 // limitations under the License.
 
 #include "rclcpp/rclcpp.hpp"
-
-#include "sensor_msgs/msg/laser_scan.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "custom_interfaces/action/parking.hpp"
 
-using LaserScan = sensor_msgs::msg::LaserScan;
+using namespace std::placeholders;
 using Parking = custom_interfaces::action::Parking;
-using GoalHandleParking = rclcpp_action::ServerGoalHandle<Parking>;
+using GoalHandleParking = rclcpp_action::ClientGoalHandle<Parking>;
 
-class ParkingActionServer : public rclcpp::Node {
+class ParkingActionClient : public rclcpp::Node {
 private:
-  rclcpp_action::Server<Parking>::SharedPtr m_action_server;
-  rclcpp::Subscription<LaserScan>::SharedPtr m_laser_sub;
-  
-  bool is_sub = false;
-  bool is_done = false;
-  double f_obs_distance = 100.0;
-  double r_obs_distance = 100.0;
-  double l_obs_distance = 100.0;
+  rclcpp_action::Client<Parking>::SharedPtr m_action_client;
 
 public:
-  ParkingActionServer() : Node("fb_action_server") {
-    using namespace std::placeholders;
-    // Create an action server with three callbacks
-    //   'handle_goal' and 'handle_cancel' are called by the Executor
-    //   (rclcpp::spin) 'execute' is called whenever 'handle_goal' returns by
-    //   accepting a goal
-    //    Calls to 'execute' are made in an available thread from a pool of
-    //    four.
-    m_action_server = rclcpp_action::create_server<Parking>(
-      this, "src_parking",
-      std::bind(&ParkingActionServer::handle_goal, this, _1, _2),
-      std::bind(&ParkingActionServer::handle_cancel, this, _1),
-      std::bind(&ParkingActionServer::handle_accepted, this, _1)
-    );
-
-    m_laser_sub = this->create_subscription<LaserScan>(
-      "scan", 10, std::bind(&ParkingActionServer::laser_callback, this, _1)
-    );
-
-    RCLCPP_INFO(get_logger(), "Action Ready...");
+  ParkingActionClient() : Node("parking_action_client"){
+    m_action_client = rclcpp_action::create_client<Parking>(this, "src_parking");
   }
 
-  void laser_callback(const LaserScan::ConstSharedPtr msg) {
-    if(is_sub){
-      f_obs_distance = msg->ranges[60];
-      r_obs_distance = msg->ranges[30];
-      l_obs_distance = msg->ranges[90];
-      
-      if(!is_done)
-        RCLCPP_INFO(get_logger(), "sub success");
+  void send_goal(){
+
+    if (!m_action_client->wait_for_action_server()) {
+      RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
+      rclcpp::shutdown();
+    }
+
+    auto goal_msg = Parking::Goal();
+    goal_msg.start_flag = true;
+    RCLCPP_INFO(this->get_logger(), "Sending goal");
+
+    auto send_goal_options = rclcpp_action::Client<Parking>::SendGoalOptions();
+    
+    send_goal_options.goal_response_callback =
+      std::bind(&ParkingActionClient::goal_response_callback, this, _1);
+    send_goal_options.feedback_callback =
+      std::bind(&ParkingActionClient::feedback_callback, this, _1, _2);
+    send_goal_options.result_callback =
+      std::bind(&ParkingActionClient::result_callback, this, _1);
+    
+    m_action_client->async_send_goal(goal_msg, send_goal_options);
+  }
+
+  void goal_response_callback(std::shared_future<GoalHandleParking::SharedPtr> future){
+    auto goal_handle = future.get();
+    if (!goal_handle) {
+      RCLCPP_ERROR(this->get_logger(), "Goal was rejected by server");
+    } else {
+      RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result");
     }
   }
 
-  rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID &uuid,
-              std::shared_ptr<const Parking::Goal> goal) {
-    RCLCPP_INFO(get_logger(), "Got goal request with order %s", goal->start_flag ? "true" : "false");
-    (void)uuid;
-    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  void feedback_callback(GoalHandleParking::SharedPtr,
+    const std::shared_ptr<const Parking::Feedback> feedback){
+    RCLCPP_INFO(this->get_logger(), "Received feedback: %f", feedback->distance);
+
+    if(feedback->distance > 6.0)
+      m_action_client->async_cancel_all_goals();
   }
 
-  rclcpp_action::CancelResponse handle_cancel(const std::shared_ptr<GoalHandleParking> goal_handle) {
-    RCLCPP_WARN(get_logger(), "Got request to cancel goal");
-    (void)goal_handle;
-    return rclcpp_action::CancelResponse::ACCEPT;
-  }
-
-  void handle_accepted(const std::shared_ptr<GoalHandleParking> goal_handle) {
-    // this needs to return quickly to avoid blocking the executor, so spin up a
-    // new thread
-    using namespace std::placeholders;
-    std::thread{std::bind(&ParkingActionServer::execute, this, _1), goal_handle}.detach();
-  }
-
-  void execute(const std::shared_ptr<GoalHandleParking> goal_handle) {
-
-    RCLCPP_INFO(get_logger(), "Executing goal");
-
-    is_sub = true;
-    rclcpp::WallRate loop_rate(1);  // 1 Hz
-
-    const auto goal = goal_handle->get_goal();
-    auto feedback = std::make_shared<Parking::Feedback>();
-    auto result = std::make_shared<Parking::Result>();
-
-    std::cout << "f_obs_distance" << f_obs_distance << std::endl;
-
-    while (f_obs_distance > 0.5) {
-      if (goal_handle->is_canceling()) {
-        result->message = "Canceled";
-        goal_handle->canceled(result);
-        RCLCPP_WARN(get_logger(), "Goal Canceled");
+  void result_callback(const GoalHandleParking::WrappedResult & result){
+    switch (result.code) {
+      case rclcpp_action::ResultCode::SUCCEEDED:
+        break;
+      case rclcpp_action::ResultCode::ABORTED:
+        RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
         return;
-      }
-      
-      feedback->distance = f_obs_distance;
-      goal_handle->publish_feedback(feedback);
-      RCLCPP_INFO(get_logger(), "Distance from forward obstacle %d", f_obs_distance);
-      
-      loop_rate.sleep();
+      case rclcpp_action::ResultCode::CANCELED:
+        RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+        return;
+      default:
+        RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+        return;
     }
 
-    // Check if there is an obstacle on the left or right
-    auto lr_diff = abs(r_obs_distance - l_obs_distance) < 0.15 ? true : false;
-
-    if (lr_diff)
-      result->message = "[Success!] Oh... Teach me how you did :0";
-    else
-      result->message = "[Fail] Be careful, Poor Driver! ";
-
-    goal_handle->succeed(result);
-    is_done = true;
-    RCLCPP_INFO(get_logger(), "Goal Succeeded");
+    RCLCPP_INFO(this->get_logger(), "Result received: %s", result.result->message.c_str());
+    rclcpp::shutdown();
   }
 };
 
@@ -133,11 +93,9 @@ int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
 
-  rclcpp::executors::MultiThreadedExecutor executor;
-  auto server_node = std::make_shared<ParkingActionServer>();
-  
-  executor.add_node(server_node);
-  executor.spin();
+  auto client_node = std::make_shared<ParkingActionClient>();
+  client_node->send_goal();
+  rclcpp::spin(client_node);
   
   rclcpp::shutdown();
   return 0;
