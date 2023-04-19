@@ -25,7 +25,8 @@ from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+
 from launch.actions import TimerAction
 
 from launch_ros.actions import Node
@@ -46,9 +47,9 @@ def generate_launch_description():
     # gazebo
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
     pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
-    # world_path = os.path.join(pkg_path, 'worlds', 'any-world-file.world')
-
+    # world_path = os.path.join(pkg_path, 'worlds', 'empty_world.world')
+    world_path = os.path.join(pkg_path, 'worlds', 'wall_world.world')
+    
     # launch configuration
     use_rviz = LaunchConfiguration('use_rviz')
 
@@ -69,25 +70,30 @@ def generate_launch_description():
     )
 
     # Robot State Publisher
-    pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
+    # pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
+    # urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
 
-    doc = xacro.parse(open(urdf_file))
-    xacro.process_doc(doc)
-    robot_description = {'robot_description': doc.toxml()}
+    # doc = xacro.parse(open(urdf_file))
+    # xacro.process_doc(doc)
+    # robot_description = {'robot_description': doc.toxml()}
+
+    # Get URDF via xacro
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("src_gazebo"), "urdf", "src_body.urdf.xacro"]
+            ),
+        ]
+    )
+    robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
         parameters=[robot_description]
-    )
-
-    # Joint State Publisher
-    joint_state_publisher = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher'
     )
 
     # rqt robot steering
@@ -189,15 +195,14 @@ def generate_launch_description():
             )
         ),
 
-        # TimerAction(    
-        #     period=7.0,
-        #     actions=[rviz]
-        # ),
+        TimerAction(    
+            period=7.0,
+            actions=[rviz]
+        ),
 
         start_gazebo_server_cmd,
         start_gazebo_client_cmd,
         robot_state_publisher,
-        joint_state_publisher,
         spawn_entity,
         rqt_robot_steering,
     ])
