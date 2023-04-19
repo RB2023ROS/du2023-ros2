@@ -18,7 +18,11 @@ import time
 
 import rclpy
 from rclpy.node import Node
+from rclpy.duration import Duration
+from rclpy.action import GoalResponse
 from rclpy.action import ActionServer
+from rclpy.action import CancelResponse
+
 from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
 
 from custom_interfaces.action import Parking
@@ -45,10 +49,15 @@ class ParkingActionServer(Node):
         )
 
         self.action_server = ActionServer(
-            self, Parking, 'src_parking', self.execute_callback
+            self, Parking, 'src_parking', 
+            execute_callback=self.execute_callback,
+            goal_callback=self.goal_callback,
+            cancel_callback=self.cancel_callback
         )
 
         self.get_logger().info("Action Ready...")
+
+        self.goal = Parking.Goal()
 
         self.is_sub = False
         self.is_done = False
@@ -58,6 +67,17 @@ class ParkingActionServer(Node):
         # distance from L/R obstacles
         self.r_obs_distance = 100.0
         self.l_obs_distance = 100.0
+
+    def goal_callback(self, goal_request):
+        self.get_logger().info('Received goal request.')
+        self.goal = goal_request
+        return GoalResponse.ACCEPT
+
+    def cancel_callback(self, goal_handle):
+        self.is_sub = False
+        self.is_done = True
+        self.get_logger().info('Received cancel request')
+        return CancelResponse.ACCEPT
 
     def sub_callback(self, data):
         
@@ -71,7 +91,8 @@ class ParkingActionServer(Node):
 
     def execute_callback(self, goal_handle):
 
-        self.is_sub = True
+        if self.goal.start_flag is True:
+            self.is_sub = True
 
         self.get_logger().info('Executing goal...')
 
