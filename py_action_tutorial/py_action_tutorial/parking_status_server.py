@@ -1,6 +1,6 @@
 # !/usr/bin/env/ python3
 #
-# Copyright 2022 @RoadBalance
+# Copyright 2023 @RoadBalance
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,9 +50,9 @@ class ParkingActionServer(Node):
 
         self.action_server = ActionServer(
             self, Parking, 'src_parking', 
-            execute_callback=self.execute_callback,
             goal_callback=self.goal_callback,
-            cancel_callback=self.cancel_callback
+            cancel_callback=self.cancel_callback,
+            execute_callback=self.execute_callback,
         )
 
         self.get_logger().info("Action Ready...")
@@ -61,12 +61,12 @@ class ParkingActionServer(Node):
 
         self.is_sub = False
         self.is_done = False
-        # distance from forward obstacles
-        self.f_obs_distance = 100.0
 
+        # distance from forward obstacles
+        self.f_obs_distance = 5.0
         # distance from L/R obstacles
-        self.r_obs_distance = 100.0
-        self.l_obs_distance = 100.0
+        self.r_obs_distance = 10.0
+        self.l_obs_distance = 10.0
 
     def goal_callback(self, goal_request):
         self.get_logger().info('Received goal request.')
@@ -76,6 +76,8 @@ class ParkingActionServer(Node):
     def cancel_callback(self, goal_handle):
         self.is_sub = False
         self.is_done = True
+        goal_handle.canceled()
+
         self.get_logger().info('Received cancel request')
         return CancelResponse.ACCEPT
 
@@ -98,7 +100,7 @@ class ParkingActionServer(Node):
 
         feedback_msg = Parking.Feedback()
 
-        while self.f_obs_distance > 0.5:
+        while self.f_obs_distance > 0.5 and self.is_done == False:
             feedback_msg.distance = self.f_obs_distance
             goal_handle.publish_feedback(feedback_msg)
             self.get_logger().info(
@@ -110,7 +112,6 @@ class ParkingActionServer(Node):
 
         result = Parking.Result()
         lr_diff = abs(self.r_obs_distance - self.l_obs_distance)
-        print(lr_diff)
         if lr_diff < 0.15:
             result.message = "[Success!] Oh... Teach me how you did :0"
         else:

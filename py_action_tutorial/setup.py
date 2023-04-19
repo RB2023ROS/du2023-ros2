@@ -22,6 +22,7 @@ setup(
         'console_scripts': [
             'dataset_generation_server   = py_action_tutorial.dataset_generation_server:main',
             'parking_action_server   = py_action_tutorial.parking_status_server:main',
+            'parking_action_client   = py_action_tutorial.parking_status_client:main',
             'turtle_turning_client   = py_action_tutorial.turtle_turning_client:main',
         ],
     },

@@ -1,3 +1,19 @@
+# !/usr/bin/env/ python3
+#
+# Copyright 2023 @RoadBalance
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -32,17 +48,15 @@ class ParkingActionClient(Node):
         self._send_goal_future.add_done_callback(self.goal_response_callback)
 
     def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
+        self.goal_handle = future.result()
+        if not self.goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
             return
 
         self.get_logger().info('Goal accepted :)')
 
-        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future = self.goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
-        # self._get_cancel_future = goal_handle.cancel_goal_async()
-        # self._get_cancel_future.add_done_callback(self.cancel_goal)
 
     def get_result_callback(self, future):
         result = future.result().result
@@ -53,7 +67,7 @@ class ParkingActionClient(Node):
         feedback = feedback_msg.feedback
         self.get_logger().info(f'Received feedback: {feedback.distance}')
 
-        if feedback.distance > 10.0:
+        if feedback.distance > 6.0:
             self.cancel_goal()
 
     def cancel_goal(self):
@@ -63,6 +77,7 @@ class ParkingActionClient(Node):
 
     def goal_canceled_callback(self, future):
         cancel_response = future.result()
+
         if len(cancel_response.goals_canceling) > 0:
             self.get_logger().info('Cancelling of goal complete')
         else:
@@ -73,11 +88,8 @@ def main(args=None):
     rclpy.init(args=args)
 
     action_client = ParkingActionClient()
-
     action_client.send_goal()
-
     rclpy.spin(action_client)
-
 
 if __name__ == '__main__':
     main()
