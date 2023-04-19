@@ -25,7 +25,8 @@ from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
+
 from launch.actions import TimerAction
 
 from launch_ros.actions import Node
@@ -67,26 +68,30 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py'))
     )
 
-    # Robot State Publisher
-    pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
+    # # Robot State Publisher
+    # pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
+    # urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
 
-    doc = xacro.parse(open(urdf_file))
-    xacro.process_doc(doc)
-    robot_description = {'robot_description': doc.toxml()}
+    # doc = xacro.parse(open(urdf_file))
+    # xacro.process_doc(doc)
+    # robot_description = {'robot_description': doc.toxml()}
+
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("src_gazebo"), "urdf", "src_body.urdf.xacro"]
+            ),
+        ]
+    )
+    robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
         output='screen',
         parameters=[robot_description]
-    )
-
-    # Joint State Publisher
-    joint_state_publisher = Node(
-        package='joint_state_publisher',
-        executable='joint_state_publisher',
-        name='joint_state_publisher'
     )
 
     # rqt robot steering
@@ -170,46 +175,45 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_rviz,
 
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=spawn_entity,
-        #         on_exit=[load_joint_state_broadcaster],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_joint_state_broadcaster,
-        #         on_exit=[load_forward_position_controller],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_forward_position_controller,
-        #         on_exit=[load_velocity_controller],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_velocity_controller,
-        #         on_exit=[src_gazebo_controller],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_velocity_controller,
-        #         on_exit=[spawn_parking_lot],
-        #     )
-        # ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[load_joint_state_broadcaster],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_forward_position_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_forward_position_controller,
+                on_exit=[load_velocity_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_velocity_controller,
+                on_exit=[src_gazebo_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_velocity_controller,
+                on_exit=[spawn_parking_lot],
+            )
+        ),
 
-        # TimerAction(    
-        #     period=7.0,
-        #     actions=[rviz]
-        # ),
+        TimerAction(    
+            period=7.0,
+            actions=[rviz]
+        ),
 
         start_gazebo_server_cmd,
         start_gazebo_client_cmd,
-        # robot_state_publisher,
-        # joint_state_publisher,
-        # spawn_entity,
-        # rqt_robot_steering,
+        robot_state_publisher,
+        spawn_entity,
+        rqt_robot_steering,
     ])

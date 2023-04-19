@@ -17,6 +17,12 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(custom_interfaces REQUIRED)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -31,5 +37,16 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+add_executable(parking_status_server src/parking_status_server.cpp)
+ament_target_dependencies(parking_status_server rclcpp custom_interfaces rclcpp_action sensor_msgs)
+
+install(
+  TARGETS
+    parking_status_server
+  DESTINATION 
+    lib/${PROJECT_NAME}
+)
+
 
 ament_package()

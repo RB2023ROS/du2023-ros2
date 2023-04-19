@@ -21,7 +21,6 @@ from rclpy.node import Node
 from rclpy.action import ActionServer
 from rclpy.executors import MultiThreadedExecutor, SingleThreadedExecutor
 
-from action_tutorials_interfaces.action import Fibonacci
 from custom_interfaces.action import Parking
 from sensor_msgs.msg import LaserScan
 
@@ -52,6 +51,7 @@ class ParkingActionServer(Node):
         self.get_logger().info("Action Ready...")
 
         self.is_sub = False
+        self.is_done = False
         # distance from forward obstacles
         self.f_obs_distance = 100.0
 
@@ -65,7 +65,9 @@ class ParkingActionServer(Node):
             self.f_obs_distance = data.ranges[60]
             self.r_obs_distance = data.ranges[30]
             self.l_obs_distance = data.ranges[90]
-            self.get_logger().info("sub success")
+            
+            if self.is_done == False:
+                self.get_logger().info("sub success")
 
     def execute_callback(self, goal_handle):
 
@@ -92,8 +94,10 @@ class ParkingActionServer(Node):
             result.message = "[Success!] Oh... Teach me how you did :0"
         else:
             result.message = "[Fail] Be careful, Poor Driver! "
-        return result
 
+        self.is_done = True
+
+        return result
 
 def main(args=None):
 
