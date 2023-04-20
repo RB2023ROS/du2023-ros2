@@ -20,6 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'tf2_broadcaster = py_tf2_tutorial.tf2_broadcast:main',
+            'tf2_listener = py_tf2_tutorial.tf2_listen:main',
+            'tf2_add_frame = py_tf2_tutorial.tf2_add_frame:main',
         ],
     },
 )
