@@ -39,10 +39,18 @@ endif()
 
 add_executable(tf2_broadcast src/tf2_broadcast.cpp)
 ament_target_dependencies(tf2_broadcast tf2 tf2_ros gazebo_msgs geometry_msgs)
- 
+
+add_executable(tf2_listener src/tf2_listen.cpp)
+ament_target_dependencies(tf2_listener tf2 tf2_ros gazebo_msgs geometry_msgs) 
+
+add_executable(tf2_add_frame src/tf2_add_frame.cpp)
+ament_target_dependencies(tf2_add_frame tf2_ros geometry_msgs) 
+
 install(
   TARGETS
+    tf2_add_frame
     tf2_broadcast
+    tf2_listener
   DESTINATION 
     lib/${PROJECT_NAME}
 )
