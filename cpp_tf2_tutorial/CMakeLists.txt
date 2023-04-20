@@ -17,6 +17,11 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -31,5 +36,15 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+add_executable(tf2_broadcast src/tf2_broadcast.cpp)
+ament_target_dependencies(tf2_broadcast tf2 tf2_ros gazebo_msgs geometry_msgs)
+ 
+install(
+  TARGETS
+    tf2_broadcast
+  DESTINATION 
+    lib/${PROJECT_NAME}
+)
 
 ament_package()
