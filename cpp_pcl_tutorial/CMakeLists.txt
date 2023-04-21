@@ -17,6 +17,12 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(PCL REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(std_msgs REQUIRED)
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -31,5 +37,15 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+ 
+add_executable(pcl_pub_sub src/pcl_pub_sub.cpp)
+ament_target_dependencies(pcl_pub_sub rclcpp std_msgs sensor_msgs pcl_conversions std_msgs PCL)
+
+install(
+  TARGETS
+    pcl_pub_sub
+  DESTINATION 
+    lib/${PROJECT_NAME}
+)
 
 ament_package()
