@@ -75,7 +75,7 @@ class DatasetGen(Node):
 
         ####### one action server #######
         self.action_server = ActionServer(
-            self, DataGen, 'src_parking', 
+            self, DataGen, 'dataset_generation', 
             self.execute_callback,
             goal_callback=self.goal_callback,
         )

@@ -66,7 +66,7 @@ private:
   }
 
 public:
-  PictureNode() : Node("turtle_circle_server"){
+  PictureNode() : Node("take_picture_server"){
     image_subscriber = this->create_subscription<Image>(
       this->img_topic_name, 10,
       std::bind(&PictureNode::img_sub_callback, this, std::placeholders::_1)

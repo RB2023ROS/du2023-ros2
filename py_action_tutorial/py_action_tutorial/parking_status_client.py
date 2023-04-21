@@ -20,8 +20,6 @@ from rclpy.action import ActionClient
 
 from custom_interfaces.action import Parking
 
-from action_tutorials_interfaces.action import Fibonacci
-
 """Parking.action
 #goal definition
 bool start_flag

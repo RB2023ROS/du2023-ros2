@@ -76,6 +76,7 @@ class ParkingActionServer(Node):
     def cancel_callback(self, goal_handle):
         self.is_sub = False
         self.is_done = True
+        # print(dir(goal_handle))
         goal_handle.canceled()
 
         self.get_logger().info('Received cancel request')
