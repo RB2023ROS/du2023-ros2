@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'pcl_sub_node = py_pcl_tutorial.pcl_sub:main',
         ],
     },
 )

@@ -8,6 +8,7 @@ sudo apt-get update
 
 echo -e "${GREEN}==== Installing External ROS Packages ====${NC}"
 
+sudo apt install python3-pcl -y
 sudo apt install ros-foxy-xacro -y
 sudo apt install ros-foxy-joint-state-publisher-gui -y
 sudo apt install ros-foxy-joint-state-publisher -y
@@ -23,3 +24,5 @@ sudo apt install ros-foxy-controller-manager -y
 sudo apt install ros-foxy-controller-manager-msgs -y
 sudo apt install ros-foxy-gazebo-ros2-control -y
 sudo apt install ros-foxy-gazebo-ros2-control-demos -y
+sudo apt install ros-foxy-sensor-msgs-py -y
+
