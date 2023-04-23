@@ -2,7 +2,7 @@ import pcl
 import pcl.pcl_visualization
 
 # Load point cloud file
-cloud = pcl.load_XYZRGB('./data/tabletop.pcd')
+cloud = pcl.load_XYZRGB('./data/pcl_sub_node.pcd')
 
 # Voxel Grid filter
 # Create a VoxelGrid filter object for our input point cloud

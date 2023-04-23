@@ -2,7 +2,7 @@ import pcl
 import pcl.pcl_visualization
 
 # Load point cloud file
-cloud = pcl.load_XYZRGB('./data/tabletop.pcd')
+cloud = pcl.load_XYZRGB('./data/pcl_sub_node.pcd')
 
 # Create pcl built-in viewer
 visual = pcl.pcl_visualization.CloudViewing()

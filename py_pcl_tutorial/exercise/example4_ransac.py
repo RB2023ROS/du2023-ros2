@@ -2,7 +2,7 @@ import pcl
 import pcl.pcl_visualization
 
 # Load point cloud file
-cloud = pcl.load_XYZRGB('./data/tabletop.pcd')
+cloud = pcl.load_XYZRGB('./data/pcl_sub_node.pcd')
 
 # Voxel Grid filter
 # Create a VoxelGrid filter object for our input point cloud
@@ -28,7 +28,7 @@ passthrough = cloud_voxed.make_passthrough_filter()
 # Assign axis and range to the passthrough filter object.
 filter_axis = 'z'
 passthrough.set_filter_field_name(filter_axis)
-axis_min = 0.6
+axis_min = -1.5
 axis_max = 1.1
 passthrough.set_filter_limits(axis_min, axis_max)
 
@@ -60,7 +60,7 @@ extracted_inliers = cloud_filtered.extract(inliers, negative=True)
 # 'ShowGrayCloud', 
 # 'ShowMonochromeCloud', 
 # 'WasStopped'
-visual.ShowColorCloud(cloud_filtered, b'cloud')
+visual.ShowColorCloud(extracted_inliers, b'cloud')
 v = True
 while v:
     v = not(visual.WasStopped())
