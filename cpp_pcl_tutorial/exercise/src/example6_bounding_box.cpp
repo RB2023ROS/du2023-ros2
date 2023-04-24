@@ -48,25 +48,6 @@ struct Box
 	float z_max;
 };
 
-// Eigen::Vector3f eulerFromRot(const Eigen::Matrix3d &R){
-
-//   float sy = sqrt(R(0,0)*R(0,0) + R(1,0)*R(1,0));
-//   bool singular = sy < 1e-6; // If
-
-//   float roll, pitch, yaw;
-//   if (!singular){
-//       roll = atan2(R(2,1) , R(2,2));
-//       pitch = atan2(-R(2,0), sy);
-//       yaw = atan2(R(1,0), R(0,0));
-//   } else{
-//       roll = atan2(-R(1,2), R(1,1));
-//       pitch = atan2(-R(2,0), sy);
-//       yaw = 0;
-//   }
-
-//   return Eigen::Vector3f(roll, pitch, yaw);
-// }
-
 void renderPointCloud(pcl::visualization::PCLVisualizer &viewer, const pcl::PointCloud<pcl::PointXYZ>::Ptr& cloud, std::string name, Color color){
   	viewer.addPointCloud<pcl::PointXYZ> (cloud, name);
   	viewer.setPointCloudRenderingProperties (pcl::visualization::PCL_VISUALIZER_POINT_SIZE, 4, name);
@@ -263,7 +244,6 @@ public:
       Eigen::SelfAdjointEigenSolver<Eigen::Matrix3f> eigen_solver(covariance, Eigen::ComputeEigenvectors);
       Eigen::Matrix3f eigenVectorsPCA = eigen_solver.eigenvectors();
       eigenVectorsPCA.col(2) = eigenVectorsPCA.col(0).cross(eigenVectorsPCA.col(1));
-      std::cout << eigenVectorsPCA << std::endl;
       /// This line is necessary for proper orientation in some cases. The numbers come out the same without it,
       /// But, the signs are different and the box doesn't get correctly oriented in some cases.
 
@@ -281,13 +261,26 @@ public:
 
       BoxQ box;
 
-      // Eigen::Vector3f eulerVec = eulerFromRot(eigenVectorsPCA);
       const Eigen::Quaternionf bboxQuaternion(eigenVectorsPCA);
-      // Eigen::Quaternionf bboxQuaternion = Eigen::AngleAxisf(eulerVec(0)*M_PI, Eigen::Vector3f::UnitX())
-      //                                     * Eigen::AngleAxisf(eulerVec(1)*M_PI, Eigen::Vector3f::UnitY())
-      //                                     * Eigen::AngleAxisf(eulerVec(2)*M_PI, Eigen::Vector3f::UnitZ());
-      
       box.bboxQuaternion = bboxQuaternion;
+
+      bool only_yaw = true;
+
+      if (only_yaw){
+        auto euler = bboxQuaternion.toRotationMatrix().eulerAngles(0, 1, 2);
+        Eigen::Quaternionf q;
+        q = Eigen::AngleAxisf(euler(0), Eigen::Vector3f::UnitX())
+          * Eigen::AngleAxisf(euler(1), Eigen::Vector3f::UnitY())
+          * Eigen::AngleAxisf(euler(2), Eigen::Vector3f::UnitZ());
+
+        Eigen::Quaternionf q_only_yaw;
+        q_only_yaw = Eigen::AngleAxisf(0.0, Eigen::Vector3f::UnitX())
+                    * Eigen::AngleAxisf(0.0, Eigen::Vector3f::UnitY())
+                    * Eigen::AngleAxisf(euler(2), Eigen::Vector3f::UnitZ());
+        
+        box.bboxQuaternion = q_only_yaw;
+      }
+
       //Quaternions are a way to do rotations https://www.youtube.com/watch?v=mHVwd8gYLnI
       box.bboxTransform = eigenVectorsPCA * meanDiagonal + pcaCentroid.head<3>();
 
