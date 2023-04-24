@@ -35,3 +35,6 @@ target_link_libraries(example5_clustering ${PCL_LIBRARIES})
 
 add_executable(example6_bounding_box src/example6_bounding_box.cpp )
 target_link_libraries(example6_bounding_box ${PCL_LIBRARIES})
+
+add_executable(rot_to_rpy src/rot_to_rpy.cpp )
+target_link_libraries(rot_to_rpy ${PCL_LIBRARIES})
