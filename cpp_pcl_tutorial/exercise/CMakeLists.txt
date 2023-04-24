@@ -24,3 +24,14 @@ target_link_libraries(example1_load_and_save ${PCL_LIBRARIES})
 add_executable(example2_voxel_downsample src/example2_voxel_downsample.cpp )
 target_link_libraries(example2_voxel_downsample ${PCL_LIBRARIES})
 
+add_executable(example3_roi_filter src/example3_roi_filter.cpp )
+target_link_libraries(example3_roi_filter ${PCL_LIBRARIES})
+
+add_executable(example4_ransac src/example4_ransac.cpp )
+target_link_libraries(example4_ransac ${PCL_LIBRARIES})
+
+add_executable(example5_clustering src/example5_clustering.cpp )
+target_link_libraries(example5_clustering ${PCL_LIBRARIES})
+
+add_executable(example6_bounding_box src/example6_bounding_box.cpp )
+target_link_libraries(example6_bounding_box ${PCL_LIBRARIES})
