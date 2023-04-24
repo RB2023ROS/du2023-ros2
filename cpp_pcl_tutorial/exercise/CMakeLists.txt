@@ -20,3 +20,7 @@ list(REMOVE_ITEM PCL_LIBRARIES "vtkproj4")
 
 add_executable(example1_load_and_save src/example1_load_and_save.cpp )
 target_link_libraries(example1_load_and_save ${PCL_LIBRARIES})
+
+add_executable(example2_voxel_downsample src/example2_voxel_downsample.cpp )
+target_link_libraries(example2_voxel_downsample ${PCL_LIBRARIES})
+
