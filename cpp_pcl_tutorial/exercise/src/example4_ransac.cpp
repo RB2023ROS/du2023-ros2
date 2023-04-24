@@ -4,10 +4,10 @@
 #include <pcl/io/pcd_io.h>
 #include <pcl/point_types.h>
 #include <pcl/filters/voxel_grid.h>
-#include <pcl/filters/extract_indices.h>
 #include <pcl/visualization/pcl_visualizer.h>
 
 #include <pcl/ModelCoefficients.h>
+#include <pcl/filters/extract_indices.h>
 #include <pcl/sample_consensus/method_types.h>
 #include <pcl/sample_consensus/model_types.h>
 #include <pcl/segmentation/sac_segmentation.h>
@@ -25,7 +25,7 @@ public:
   ~ProcessPoint(){};
 
   std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> 
-    SeparateClouds(
+    seperate_clouds(
       pcl::PointIndices::Ptr inliers, 
         typename pcl::PointCloud<PointT>::Ptr cloud){
 
@@ -58,7 +58,7 @@ public:
     auto startTime = std::chrono::steady_clock::now();
     // pcl::PointIndices::Ptr inliers;
 
-    // TODO:: Fill in this function to find inliers for the cloud.
+    // Fill in this function to find inliers for the cloud.
     // Create the segmentation object
     pcl::SACSegmentation<PointT> seg;
     pcl::PointIndices::Ptr inliers{new pcl::PointIndices};
@@ -76,7 +76,7 @@ public:
         std::cerr << "Could not estimate a planar model for the given dataset." << std::endl;
 
     std::pair<typename pcl::PointCloud<PointT>::Ptr, typename pcl::PointCloud<PointT>::Ptr> segResult = 
-      SeparateClouds(inliers, cloud);
+      seperate_clouds(inliers, cloud);
 
     auto endTime = std::chrono::steady_clock::now();
     auto elapsedTime = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);

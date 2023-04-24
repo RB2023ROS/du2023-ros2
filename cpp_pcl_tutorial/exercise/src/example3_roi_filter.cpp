@@ -19,13 +19,13 @@ typename pcl::PointCloud<PointT>::Ptr roi_filter(
   // TODO:: Fill in the function to do voxel grid point reduction and region based filtering
   typename pcl::PointCloud<PointT>::Ptr cloudFiltered(new pcl::PointCloud<PointT>);
 
-  // 오브젝트 생성 
+  // Create Object
   pcl::PassThrough<PointT> pass;
-  pass.setInputCloud (cloud);                //입력 
-  pass.setFilterFieldName ("z");             //적용할 좌표 축 (eg. Z축)
-  pass.setFilterLimits (min_z, max_z);          //적용할 값 (최소, 최대 값)
-  //pass.setFilterLimitsNegative (true);     //적용할 값 외 
-  pass.filter (*cloudFiltered);             //필터 적용 
+  pass.setInputCloud(cloud);                
+  pass.setFilterFieldName("z");             // filter axis field name
+  pass.setFilterLimits(min_z, max_z);       // min, max axis range
+  //pass.setFilterLimitsNegative (true);     // true or false
+  pass.filter(*cloudFiltered);              // extract
 
   // get end time and console output
   auto endTime = std::chrono::steady_clock::now();

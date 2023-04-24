@@ -39,7 +39,10 @@ int main (int argc, char** argv) {
   auto voxel_cloud = voxel_downsample<pcl::PointXYZ>(cloud, 0.1);
   
   pcl::visualization::PCLVisualizer viewer("PCL Viewer");
-  viewer.addPointCloud<pcl::PointXYZ>(voxel_cloud, "cloud");
+  viewer.addPointCloud<pcl::PointXYZ>(voxel_cloud, "voxel filtered cloud");
+  viewer.setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, 
+    0.5, 0.3, 0.0, "voxel filtered cloud");
+
   while (!viewer.wasStopped()) {
       viewer.spinOnce();
   }
