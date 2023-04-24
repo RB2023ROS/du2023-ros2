@@ -10,11 +10,14 @@
 #include <pcl/conversions.h>
 #include <pcl/filters/voxel_grid.h>
 
+using Point = pcl::PointXYZI;
+
 using PointCloud2 = sensor_msgs::msg::PointCloud2;
 
-pcl::PointCloud<pcl::PointXYZI> pcl_processing(const pcl::PointCloud<pcl::PointXYZI> in_pointcloud){
+template <typename T>
+pcl::PointCloud<T> pcl_processing(const pcl::PointCloud<T> in_pointcloud){
   // Create output pointcloud
-  pcl::PointCloud<pcl::PointXYZI> out_pointcloud;
+  pcl::PointCloud<T> out_pointcloud;
 
   // Processing
   out_pointcloud = in_pointcloud;
@@ -40,11 +43,11 @@ public:
 
   void topic_callback_3d(const PointCloud2::SharedPtr msg) const {    
     // Convert to PCL data type
-    pcl::PointCloud<pcl::PointXYZI> point_cloud;
-    pcl::fromROSMsg(*msg, point_cloud);     
+    pcl::PointCloud<Point> point_cloud;
+    pcl::fromROSMsg(*msg, point_cloud);
 
     // PCL Processing
-    pcl::PointCloud<pcl::PointXYZI> pcl_pointcloud = pcl_processing(point_cloud);
+    pcl::PointCloud<Point> pcl_pointcloud = pcl_processing(point_cloud);
     
     // Convert to ROS data type
     PointCloud2 output;

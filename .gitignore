@@ -3,6 +3,7 @@
 
 src_gazebo/urdf/src_body.urdf
 *.json
+*/build/*
 
 # User-specific stuff
 */.idea/*

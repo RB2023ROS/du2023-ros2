@@ -14,6 +14,9 @@ visual = pcl.pcl_visualization.CloudViewing()
 # 'ShowMonochromeCloud', 
 # 'WasStopped'
 
+# filename = 'example_save.pcd'
+# pcl.save(cloud, filename)
+
 visual.ShowColorCloud(cloud, b'cloud')
 v = True
 while v:
