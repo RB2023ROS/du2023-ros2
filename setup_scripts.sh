@@ -20,6 +20,7 @@ sudo apt install ros-foxy-gazebo-ros* -y
 sudo apt install ros-foxy-ros2-controllers -y
 sudo apt install ros-foxy-ros2-control -y
 sudo apt install ros-foxy-rqt-robot-steering -y
+sudo apt install ros-foxy-rqt-image-view -y
 sudo apt install ros-foxy-controller-manager -y
 sudo apt install ros-foxy-controller-manager-msgs -y
 sudo apt install ros-foxy-gazebo-ros2-control -y
