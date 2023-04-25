@@ -47,6 +47,9 @@ ament_target_dependencies(callback_group rclcpp)
 add_executable(reentrant_callback_group src/reentrant_callback_group.cpp)
 ament_target_dependencies(reentrant_callback_group rclcpp)
 
+add_executable(reentrant_limited src/reentrant_limited.cpp)
+ament_target_dependencies(reentrant_limited rclcpp)
+
 
 install(
   TARGETS
@@ -54,6 +57,7 @@ install(
     multi_executor
     callback_group
     reentrant_callback_group
+    reentrant_limited
   DESTINATION 
     lib/${PROJECT_NAME}
 )
