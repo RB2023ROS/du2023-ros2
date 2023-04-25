@@ -26,4 +26,4 @@ sudo apt install ros-foxy-controller-manager-msgs -y
 sudo apt install ros-foxy-gazebo-ros2-control -y
 sudo apt install ros-foxy-gazebo-ros2-control-demos -y
 sudo apt install ros-foxy-sensor-msgs-py -y
-
+sudo apt install ros-foxy-composition -y
