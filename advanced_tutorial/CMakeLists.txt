@@ -33,10 +33,10 @@ if(BUILD_TESTING)
 endif()
 
 install(
-  TARGETS
+  DIRECTORY
     launch
-  DESTINATION 
-    lib/${PROJECT_NAME}
+  DESTINATION
+    share/${PROJECT_NAME}/
 )
 
 ament_package()
