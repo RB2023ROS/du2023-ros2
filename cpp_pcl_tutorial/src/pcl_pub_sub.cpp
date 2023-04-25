@@ -14,12 +14,15 @@
 using PointCloud2 = sensor_msgs::msg::PointCloud2;
 
 template <typename PointT>
-pcl::PointCloud<PointT> pcl_processing(const pcl::PointCloud<PointT> in_pointcloud){
+pcl::PointCloud<PointT> pcl_processing(typename pcl::PointCloud<PointT> &in_pointcloud){
   // Create output pointcloud
-  pcl::PointCloud<PointT> out_pointcloud;
+  typename pcl::PointCloud<PointT> out_pointcloud;
 
-  // Processing
-  out_pointcloud = in_pointcloud;
+  // processing
+  typename pcl::PointCloud<PointT>::Ptr proc_pointcloud = in_pointcloud.makeShared();
+
+  // Prepare return type
+  out_pointcloud = *proc_pointcloud;
 
   return out_pointcloud;
 }
