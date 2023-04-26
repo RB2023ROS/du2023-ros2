@@ -54,6 +54,23 @@ ament_target_dependencies(watermark_node rclcpp sensor_msgs OpenCV)
 add_executable(image_view_node src/image_view_node.cpp)
 ament_target_dependencies(image_view_node rclcpp sensor_msgs OpenCV)
 
+add_library(basic_component SHARED src/basic_component.cpp)
+target_compile_definitions(basic_component PRIVATE "COMPOSITION_TUTORIAL_BUILDING_DLL")
+ament_target_dependencies(basic_component
+  "rclcpp"
+  "rclcpp_components"
+  "std_msgs"
+)
+rclcpp_components_register_nodes(basic_component "composition_tutorial::BasicComponent")
+set(node_plugins "${node_plugins}composition_tutorial::BasicComponent;$<TARGET_FILE:basic_component>\n")
+
+install(TARGETS
+  basic_component
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
 
 install(
   TARGETS
