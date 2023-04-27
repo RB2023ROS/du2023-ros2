@@ -28,3 +28,5 @@ sudo apt install ros-foxy-gazebo-ros2-control-demos -y
 sudo apt install ros-foxy-sensor-msgs-py -y
 sudo apt install ros-foxy-composition -y
 sudo apt install ros-foxy-sensor-msgs-py -y
+sudo apt install ros-foxy-rqt-robot-monitor -y
+sudo apt install ros-foxy-rqt-runtime-monitor -y
