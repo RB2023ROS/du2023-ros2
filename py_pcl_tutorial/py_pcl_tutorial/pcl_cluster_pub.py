@@ -19,6 +19,8 @@ class PCLClusterNode(Node):
             PointCloud2, 'cluster', 10
         )
 
+        self.get_logger().info('PCL Cluster Node has been started')
+
         self.cb_flag = True
 
     def pcl_callback(self, pcl_msg):
@@ -43,9 +45,6 @@ class PCLClusterNode(Node):
 
         # Call the filter function to obtain the resultant downsampled point cloud
         cloud_voxed = vox.filter()
-
-        # Create pcl built-in viewer
-        visual = pcl.pcl_visualization.CloudViewing()
 
         # Pass Through filter
         passthrough = cloud_voxed.make_passthrough_filter()
@@ -116,7 +115,7 @@ class PCLClusterNode(Node):
         cluster_cloud.from_list(color_cluster_point_list)
 
         # Convert PCL data to ROS 2 messages
-        cluster_cloud_msg = pcl_to_ros2(cluster_cloud)
+        cluster_cloud_msg = pcl_to_ros2(cluster_cloud, now=self.get_clock().now())
         self.cluster_publisher.publish(cluster_cloud_msg)
 
 def main(args=None):
