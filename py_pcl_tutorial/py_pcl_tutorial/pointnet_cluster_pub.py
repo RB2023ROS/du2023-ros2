@@ -46,21 +46,9 @@ class PCLClusterNode(Node):
         # Call the filter function to obtain the resultant downsampled point cloud
         cloud_voxed = vox.filter()
 
-        # Pass Through filter
-        passthrough = cloud_voxed.make_passthrough_filter()
-
-        # Assign axis and range to the passthrough filter object.
-        filter_axis = 'z'
-        passthrough.set_filter_field_name(filter_axis)
-        axis_min = -1.5
-        axis_max = 1.1
-        passthrough.set_filter_limits(axis_min, axis_max)
-
-        cloud_filtered = passthrough.filter()
-
         # RANSAC plane segmentation
         # Create the segmentation object
-        seg = cloud_filtered.make_segmenter()
+        seg = cloud_voxed.make_segmenter()
 
         # Set the model you wish to fit
         seg.set_model_type(pcl.SACMODEL_PLANE)
@@ -76,40 +64,19 @@ class PCLClusterNode(Node):
         inliers, coefficients = seg.segment()
 
         # Extract inliers
-        extracted_inliers = cloud_filtered.extract(inliers, negative=True)
+        extracted_inliers = cloud_voxed.extract(inliers, negative=True)
 
-        # Euclidean Clustering
-        # create kd tree for the search method of extraction
-        tree = extracted_inliers.make_kdtree()
-
-        # Create a cluster extraction object
-        ec = extracted_inliers.make_EuclideanClusterExtraction()
-
-        # Set tolerances for distance threshold 
-        # as well as minimum and maximum cluster size (in points)
-        ec.set_ClusterTolerance(0.07)
-        ec.set_MinClusterSize(10)
-        ec.set_MaxClusterSize(25000)
-
-        # Search the k-d tree for clusters
-        ec.set_SearchMethod(tree)
-        # Extract indices for each of the discovered clusters
-        cluster_indices = ec.Extract()
-
-        # Create Cluster-Mask Point Cloud to visualize each cluster separately
-        get_color_list.color_list =[]
-        cluster_color = get_color_list(len(cluster_indices))
-
-        # Assign a color corresponding to each segmented object in scene
+        # inliers into list for ROS 2 Conversion
         color_cluster_point_list = []
+        # cloud size color generator
+        color = size_color_gen(extracted_inliers)
 
-        for j, indices in enumerate(cluster_indices):
-            for i, indice in enumerate(indices):
-                color_cluster_point_list.append([extracted_inliers[indice][0],
-                                                extracted_inliers[indice][1],
-                                                extracted_inliers[indice][2],
-                                                rgb_to_float(cluster_color[j])])
-
+        for i, indices in enumerate(extracted_inliers):
+            color_cluster_point_list.append([extracted_inliers[i][0],
+                                            extracted_inliers[i][1],
+                                            extracted_inliers[i][2],
+                                            rgb_to_float(color)])
+            
         #Create new cloud containing all clusters, each with unique color
         cluster_cloud = pcl.PointCloud_PointXYZRGB()
         cluster_cloud.from_list(color_cluster_point_list)

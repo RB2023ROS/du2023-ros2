@@ -21,6 +21,22 @@ import sensor_msgs_py.point_cloud2 as pc2
 from sensor_msgs.msg import PointCloud2, PointField
 from random import randint
 
+def size_color_gen(cloud):
+    """ Generates a color based on cloud size
+
+        Args: None
+
+        Returns:
+            list: 3 elements, R, G, and B
+    """
+    if cloud.size < 1000:
+        return [255, 0, 0]
+    elif cloud.size < 10000:
+        return [0, 255, 0]
+    else:
+        return [0, 0, 255]
+
+
 def random_color_gen():
     """ Generates a random color
 
