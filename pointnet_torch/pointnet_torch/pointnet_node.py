@@ -45,7 +45,7 @@ class PointNetNode(Node):
         self.get_logger().info('PointNet classification network has been loaded')
 
         self.pc_subscription = self.create_subscription(
-            PointCloud2, 'pointcloud',
+            PointCloud2, 'cluster',
             self.obj_callback, 10
         )
 

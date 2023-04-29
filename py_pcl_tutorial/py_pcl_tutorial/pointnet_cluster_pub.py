@@ -38,7 +38,7 @@ class PCLClusterNode(Node):
         # Choose a voxel (also known as leaf) size
         # Note: this (1) is a poor choice of leaf size   
         # Experiment and find the appropriate size!
-        LEAF_SIZE = 0.01
+        LEAF_SIZE = 0.001
 
         # Set the voxel (or leaf) size  
         vox.set_leaf_size(LEAF_SIZE, LEAF_SIZE, LEAF_SIZE)
