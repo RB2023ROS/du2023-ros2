@@ -17,6 +17,13 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+
+# python part
+find_package(rclpy REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+
+
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -31,5 +38,26 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+include_directories(include)
+
+add_executable(my_node src/main.cpp src/my_node.cpp)
+ament_target_dependencies(my_node rclcpp)
+
+install(
+  TARGETS
+    my_node
+  DESTINATION 
+    lib/${PROJECT_NAME}
+)
+
+###### Python Part #####
+# Install Python modules
+ament_python_install_package(${PROJECT_NAME})
+# Install Python executables
+install(PROGRAMS
+  ament_general/my_py_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()
