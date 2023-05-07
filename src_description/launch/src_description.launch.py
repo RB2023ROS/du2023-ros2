@@ -16,8 +16,8 @@ def generate_launch_description():
 
     pkg_path = os.path.join(get_package_share_directory("src_description"))
     rviz_config_file = os.path.join(pkg_path, "rviz", "description.rviz")
-    # urdf_file = os.path.join(pkg_path, "urdf", "src_body.urdf")
-    urdf_file = os.path.join(pkg_path, "urdf", "src_body_new.urdf")
+    urdf_file = os.path.join(pkg_path, "urdf", "src_body.urdf")
+    # urdf_file = os.path.join(pkg_path, "urdf", "src_body_new.urdf")
 
     joint_state_publisher_gui = Node(
         package="joint_state_publisher_gui",
