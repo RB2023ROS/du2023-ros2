@@ -53,7 +53,7 @@ class TF2Listener(Node):
         self.publisher.publish(msg)
 
 def main():
-    rclpy.init
+    rclpy.init()
     node = TF2Listener()
 
     try:
