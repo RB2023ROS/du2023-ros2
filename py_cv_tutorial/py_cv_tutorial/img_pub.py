@@ -11,7 +11,7 @@ from sensor_msgs.msg import Image # Image is the message type
 from cv_bridge import CvBridge # Package to convert between ROS and OpenCV Images
 import cv2 # OpenCV library
 
-VIDEO_FILE_ROOT = "/home/kimsooyoung/djhrd_ws/rosbag/img_pub_test.mp4"
+VIDEO_FILE_ROOT = "/home/kimsooyoung/ros2_ws/rosbag2/img_pub_test.mp4"
 
 class ImagePublisher(Node):
     """
