@@ -9,8 +9,7 @@
 
   <link name="base_link">
     <inertial>
-      <!-- <origin xyz="0.08610442944117125 -0.0010181684635799757 0.03851437758777222" rpy="0 0 0"/> -->
-      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <origin xyz="0.08610442944117125 -0.0010181684635799757 0.03851437758777222" rpy="0 0 0"/>
       <mass value="2.9675633650363595"/>
       <inertia ixx="0.011642" iyy="0.035651" izz="0.038255" ixy="0.000148" iyz="-9.3e-05" ixz="0.000342"/>
     </inertial>
@@ -189,7 +188,7 @@
       <mass value="0.06839266167546813"/>
       <inertia ixx="3.8e-05" iyy="3.9e-05" izz="5.5e-05" ixy="0.0" iyz="-0.0" ixz="-2e-06"/>
     </inertial>
-    <visual>
+    <!-- <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
         <mesh filename="$(find src_gazebo)/meshes/rplidar_a2.stl" scale="0.001 0.001 0.001"/>
@@ -201,7 +200,7 @@
       <geometry>
         <mesh filename="$(find src_gazebo)/meshes/rplidar_a2.stl" scale="0.001 0.001 0.001"/>
       </geometry>
-    </collision>
+    </collision> -->
   </link>
 
   <joint name="rplidar_a2_joint" type="fixed">

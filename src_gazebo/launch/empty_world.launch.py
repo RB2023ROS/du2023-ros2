@@ -84,6 +84,7 @@ def generate_launch_description():
             " ",
             PathJoinSubstitution(
                 [FindPackageShare("src_gazebo"), "urdf", "src_body.urdf.xacro"]
+                # [FindPackageShare("src_gazebo"), "urdf", "src_body_new.urdf.xacro"]
             ),
         ]
     )

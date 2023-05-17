@@ -23,7 +23,7 @@ from launch.event_handlers import OnProcessExit
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument, RegisterEventHandler
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch.actions import TimerAction
 
 from launch_ros.actions import Node
@@ -67,12 +67,17 @@ def generate_launch_description():
     )
 
     # Robot State Publisher
-    pkg_path = os.path.join(get_package_share_directory('src_gazebo'))
-    urdf_file = os.path.join(pkg_path, 'urdf', 'src_body.urdf')
-
-    doc = xacro.parse(open(urdf_file))
-    xacro.process_doc(doc)
-    robot_description = {'robot_description': doc.toxml()}
+    # Get URDF via xacro
+    robot_description_content = Command(
+        [
+            PathJoinSubstitution([FindExecutable(name="xacro")]),
+            " ",
+            PathJoinSubstitution(
+                [FindPackageShare("src_gazebo"), "urdf", "src_body.urdf.xacro"]
+            ),
+        ]
+    )
+    robot_description = {"robot_description": robot_description_content}
 
     robot_state_publisher = Node(
         package='robot_state_publisher',
