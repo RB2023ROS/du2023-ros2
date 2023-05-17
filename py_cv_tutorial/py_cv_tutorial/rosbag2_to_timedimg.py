@@ -6,6 +6,16 @@ from cv_bridge import CvBridge # Package to convert between ROS and OpenCV Image
 import numpy as np
 import cv2
 
+import os
+ 
+def createFolder(directory):
+    try:
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+    except OSError:
+        print ('Error: Creating directory. ' +  directory)
+ 
+
 class BagFileParser():
     def __init__(self, bag_file):
         self.conn = sqlite3.connect(bag_file)
@@ -33,7 +43,7 @@ class BagFileParser():
 def main(args=None):
 
     # Change below roots to your ros2 bag locations
-    ROOT_DIR = "/home/kimsooyoung/djhrd_ws/quadrupped_train"
+    ROOT_DIR = "/home/kimsooyoung/ros2_ws/rosbag2/quadrupped_train"
     FILENAME = "/quadrupped_train.bag_0.db3"
     DESCRIPTION = "color_"
 
@@ -44,6 +54,9 @@ def main(args=None):
 
     # (timestamp, actual_data) => 301개
     img_topics = parser.get_messages("/camera/color/image_raw")
+
+    createFolder(ROOT_DIR + '/depth')
+    createFolder(ROOT_DIR + '/color')
 
     for k, b in enumerate(img_topics):
         bridge = CvBridge()
