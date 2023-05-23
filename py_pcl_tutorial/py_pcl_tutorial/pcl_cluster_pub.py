@@ -129,7 +129,8 @@ class PCLClusterNode(Node):
         cluster_cloud.from_list(color_cluster_point_list)
 
         # Convert PCL data to ROS 2 messages
-        cluster_cloud_msg = pcl_to_ros2(cluster_cloud, now=self.get_clock().now())
+        cluster_cloud_msg = pcl_to_ros2(cluster_cloud, "world", now=self.get_clock().now())
+        # cluster_cloud_msg = pcl_to_ros2(cluster_cloud, "velodyne", now=self.get_clock().now())
         self.cluster_publisher.publish(cluster_cloud_msg)
 
 def main(args=None):
