@@ -170,30 +170,30 @@ def generate_launch_description():
     return LaunchDescription([
         declare_use_rviz,
 
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=spawn_entity,
-        #         on_exit=[load_joint_state_broadcaster],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_joint_state_broadcaster,
-        #         on_exit=[load_forward_position_controller],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_forward_position_controller,
-        #         on_exit=[load_velocity_controller],
-        #     )
-        # ),
-        # RegisterEventHandler(
-        #     event_handler=OnProcessExit(
-        #         target_action=load_velocity_controller,
-        #         on_exit=[src_gazebo_controller],
-        #     )
-        # ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_entity,
+                on_exit=[load_joint_state_broadcaster],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_forward_position_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_forward_position_controller,
+                on_exit=[load_velocity_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_velocity_controller,
+                on_exit=[src_gazebo_controller],
+            )
+        ),
 
         # TimerAction(    
         #     period=7.0,
@@ -204,5 +204,5 @@ def generate_launch_description():
         start_gazebo_client_cmd,
         robot_state_publisher,
         spawn_entity,
-        # rqt_robot_steering,
+        rqt_robot_steering,
     ])
